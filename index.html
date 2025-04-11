@@ -85,7 +85,7 @@
         // Функции для работы с API
         async function fetchCoins() {
             try {
-                const response = await fetch('/coins', {
+                const response = await fetch('/api/coins', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ initData: tg.initData })
