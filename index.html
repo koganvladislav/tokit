@@ -59,66 +59,28 @@
         <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
     </div>
     <div class="coin-counter">
-      💰: <span id="coins">0</span>
+      💰: <span id="coins">52</span>
     </div>
 
     <script>
         const API_KEY = "AIzaSyAajvPaSxDC8NMm1Yn50W2V2Ym_TIcm4x8";
-        const tg = window.Telegram.WebApp;
         let selectedTopics = [];
         let videos = [];
         let currentIndex = 0;
         let player;
-        let coins = 0;
+        let coins = 52;
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
         let interval;
 
-        // Инициализация Telegram WebApp
-        tg.ready();
-        tg.expand();
-
-        // Загрузка баланса при старте
-        fetchCoins();
-
-        // Функции для работы с API
-        async function fetchCoins() {
-            try {
-                const response = await fetch('/api/coins', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ initData: tg.initData })
-                });
-                const data = await response.json();
-                coins = data.coins;
-                updateCoinDisplay();
-            } catch (error) {
-                console.error('Ошибка загрузки монет:', error);
-            }
-        }
-
-        async function addCoin() {
-            try {
-                const response = await fetch('/api/coins', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        initData: tg.initData,
-                        amount: 1 
-                    })
-                });
-                const data = await response.json();
-                coins = data.coins;
-                updateCoinDisplay();
-            } catch (error) {
-                console.error('Ошибка добавления монет:', error);
-            }
-        }
-
-        function updateCoinDisplay() {
-            document.getElementById('coins').textContent = coins;
-        }
+        // При загрузке страницы отправляем запрос для добавления vlados с 52 монетами
+        window.onload = function() {
+            fetch('/api/coins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+        };
 
         // Функции для работы с YouTube
         function onYouTubeIframeAPIReady() {
@@ -152,13 +114,18 @@
                 watchedTime++;
                 if (watchedTime >= videoDuration / 2 && !isHalfWatched) {
                     isHalfWatched = true;
-                    addCoin();
+                    coins++;
+                    updateCoinDisplay();
                 }
             }, 1000);
         }
 
         function stopTracking() {
             clearInterval(interval);
+        }
+
+        function updateCoinDisplay() {
+            document.getElementById('coins').textContent = coins;
         }
 
         function toggleTopic(button) {
