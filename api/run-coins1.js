@@ -1,36 +1,36 @@
 const { Pool } = require('pg');
 
-const connectionString = 'postgresql://neondb_owner:npg_oDfBsJ7Wad4k@ep-ancient-fire-ab1mjrmu-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require';
-
 const pool = new Pool({
-  connectionString: connectionString,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
 });
 
-export default async function handler(req, res) {
-  if (req.method === 'POST') {
-    const client = await pool.connect();
+module.exports = async (req, res) => {
+    const { userId } = req.query;
 
-    try {
-      // Код из coins1.js
-      const result = await client.query(`
-        INSERT INTO users (user_id, coins) 
-        VALUES 
-          (1009991, 69),
-          (1002000, 100)
-        RETURNING user_id, coins, created_at;
-      `);
-
-      return res.status(200).json({ success: true, result: result.rows });
-    } catch (error) {
-      console.error('Ошибка при выполнении запроса:', error);
-      return res.status(500).json({ success: false, message: 'Ошибка при выполнении запроса' });
-    } finally {
-      client.release();
+    if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
     }
-  } else {
-    return res.status(405).json({ success: false, message: 'Метод не разрешен' });
-  }
-}
+
+    const client = await pool.connect();
+    try {
+        // Обновляем количество монет для пользователя
+        const result = await client.query(`
+            UPDATE users
+            SET coins = coins + 1
+            WHERE user_id = $1
+            RETURNING coins;
+        `, [userId]);
+
+        if (result.rows.length > 0) {
+            return res.json({ coins: result.rows[0].coins });
+        } else {
+            return res.status(404).json({ error: "User not found" });
+        }
+    } catch (error) {
+        console.error("Ошибка при обновлении монет:", error);
+        res.status(500).json({ error: "Internal server error" });
+    } finally {
+        client.release();
+    }
+};
