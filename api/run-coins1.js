@@ -18,8 +18,8 @@ export default async function handler(req, res) {
       const result = await client.query(`
         INSERT INTO users (user_id, coins) 
         VALUES 
-          (1001, 69),
-          (1002, 100)
+          (1009991, 69),
+          (1002000, 100)
         RETURNING user_id, coins, created_at;
       `);
 
