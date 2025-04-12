@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokitblablablablebleble</title>
+    <title>Tokit</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
         .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
@@ -59,7 +59,7 @@
         <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
     </div>
     <div class="coin-counter">
-      💰: <span id="coins">52</span>
+      💰: <span id="coins">0</span>
     </div>
 
     <script>
@@ -68,21 +68,12 @@
         let videos = [];
         let currentIndex = 0;
         let player;
-        let coins = 52;
+        let coins = parseInt(localStorage.getItem('coins')) || 0;
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
         let interval;
 
-        // При загрузке страницы отправляем запрос для добавления vlados с 52 монетами
-        window.onload = function() {
-            fetch('/api/coins', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' }
-            });
-        };
-
-        // Функции для работы с YouTube
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '480',
@@ -96,6 +87,7 @@
 
         function onPlayerReady(event) {
             event.target.playVideo();
+            updateCoinDisplay();
         }
 
         function onPlayerStateChange(event) {
@@ -114,14 +106,19 @@
                 watchedTime++;
                 if (watchedTime >= videoDuration / 2 && !isHalfWatched) {
                     isHalfWatched = true;
-                    coins++;
-                    updateCoinDisplay();
+                    addCoin();
                 }
             }, 1000);
         }
 
         function stopTracking() {
             clearInterval(interval);
+        }
+
+        function addCoin() {
+            coins++;
+            localStorage.setItem('coins', coins);
+            updateCoinDisplay();
         }
 
         function updateCoinDisplay() {
@@ -146,6 +143,7 @@
             }
 
             const query = selectedTopics.join("|");
+            // Добавляем "shorts" к запросу и ограничение по длительности (до 1 минуты)
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
 
             fetch(url)
@@ -184,7 +182,6 @@
             }
         }
 
-        // Загрузка YouTube API
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
         const firstScriptTag = document.getElementsByTagName('script')[0];
