@@ -3,23 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>To</title>
+  <title>Tokit</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
     .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
     .topic { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
     .selected { background-color: #ff5722; color: white; }
-    .video-container {
-      display: flex;
-      justify-content: center;
-      margin: 20px auto;
-    }
-    #player {
-      width: 320px;
-      height: 560px;
-      border-radius: 15px;
-      overflow: hidden;
-    }
+    .video-container { display: flex; justify-content: center; margin: 20px auto; }
+    #player { width: 320px; height: 560px; border-radius: 15px; overflow: hidden; }
     .controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
     .nav-btn { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
     .coin-counter { font-size: 20px; margin-top: 20px; }
@@ -63,18 +54,15 @@
   </div>
 
   <script>
-    const API_KEY = "AIzaSyAajvPaSxDC8NMm1Yn50W2V2Ym_TIcm4x8";
     let selectedTopics = [];
     let videos = [];
     let currentIndex = 0;
     let player;
-    let coins = parseInt(localStorage.getItem('coins')) || 0;
+    let coins = 0;
     let videoDuration = 0;
     let isHalfWatched = false;
     let watchedTime = 0;
     let interval;
-
-    const userId = 1001; // Уникальный ID пользователя
 
     function onYouTubeIframeAPIReady() {
       player = new YT.Player('player', {
@@ -117,11 +105,24 @@
       clearInterval(interval);
     }
 
-    function addCoin() {
-      coins++;
-      localStorage.setItem('coins', coins);
-      updateCoinDisplay();
-      giveCoinToUser(userId); // <-- Вызов серверной функции
+    async function addCoin() {
+      try {
+        const response = await fetch('/api/addCoin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: 1001 }) // Пример user_id
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          coins = result.coins;
+          updateCoinDisplay();
+        } else {
+          console.error("Ошибка начисления монеты:", result.message);
+        }
+      } catch (error) {
+        console.error("Ошибка подключения к API:", error);
+      }
     }
 
     function updateCoinDisplay() {
@@ -146,7 +147,7 @@
       }
 
       const query = selectedTopics.join("|");
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
+      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=YOUR_API_KEY`;
 
       fetch(url)
         .then(response => response.json())
@@ -184,29 +185,9 @@
       }
     }
 
-    function giveCoinToUser(userId) {
-      fetch('/tokit/api/addCoins', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          user_id: userId,
-          coins: 1
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        console.log('Монета добавлена на сервер:', data);
-      })
-      .catch(err => {
-        console.error('Ошибка при отправке на сервер:', err);
-      });
-    }
-
-    // Загрузка YouTube API
     const tag = document.createElement('script');
     tag.src = "https://www.youtube.com/iframe_api";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    document.body.appendChild(tag);
   </script>
 </body>
 </html>
