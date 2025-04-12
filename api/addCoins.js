@@ -1,8 +1,10 @@
-// /api/addCoins.js
 const { Pool } = require('pg');
 
+// Строка подключения к вашей базе данных Neon
+const connectionString = 'postgresql://neondb_owner:npg_oDfBsJ7Wad4k@ep-ancient-fire-ab1mjrmu-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require';
+
 const pool = new Pool({
-  connectionString: 'postgresql://neondb_owner:npg_oDfBsJ7Wad4k@ep-ancient-fire-ab1mjrmu-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require',
+  connectionString,
   max: 20,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
@@ -10,28 +12,35 @@ const pool = new Pool({
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
-    return res.status(405).send('Method not allowed');
+    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  const { user_id, coins } = req.body;
+  const { user_id } = req.body;
 
-  if (!user_id || typeof coins !== 'number') {
-    return res.status(400).json({ error: 'Invalid payload' });
+  if (!user_id) {
+    return res.status(400).json({ success: false, message: 'Missing user_id' });
   }
 
   const client = await pool.connect();
+
   try {
-    const result = await client.query(
-      `INSERT INTO users (user_id, coins)
-       VALUES ($1, $2)
-       ON CONFLICT (user_id) DO UPDATE SET coins = users.coins + $2
-       RETURNING *`,
-      [user_id, coins]
-    );
-    res.status(200).json({ message: 'Coins updated', data: result.rows[0] });
+    // Увеличиваем значение монет у пользователя
+    const updateQuery = `
+      INSERT INTO users (user_id, coins)
+      VALUES ($1, 1)
+      ON CONFLICT (user_id)
+      DO UPDATE SET coins = users.coins + 1
+      RETURNING coins;
+    `;
+
+    const result = await client.query(updateQuery, [user_id]);
+    const newCoins = result.rows[0].coins;
+
+    return res.status(200).json({ success: true, coins: newCoins });
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Ошибка в /api/addCoin:', error);
+    return res.status(500).json({ success: false, message: 'Internal Server Error' });
   } finally {
     client.release();
   }
