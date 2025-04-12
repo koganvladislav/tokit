@@ -21,13 +21,13 @@ module.exports = async (req, res) => {
 
   const client = await pool.connect();
   try {
-    const result = await client.query(`
-      INSERT INTO users (user_id, coins) 
-      VALUES 
-        (1001, 5),
-        (1002, 100)
-      RETURNING user_id, coins, created_at;
-    `);
+    const result = await client.query(
+      `INSERT INTO users (user_id, coins)
+       VALUES ($1, $2)
+       ON CONFLICT (user_id) DO UPDATE SET coins = users.coins + $2
+       RETURNING *`,
+      [user_id, coins]
+    );
     res.status(200).json({ message: 'Coins updated', data: result.rows[0] });
   } catch (error) {
     console.error(error);
