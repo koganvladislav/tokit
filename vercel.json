@@ -6,13 +6,13 @@
       "use": "@vercel/static"
     },
     {
-      "src": "api/run-coins1.js",
+      "src": "api/add-coin.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/run-coins1",
+      "src": "/api/add-coin",
       "dest": "/api/run-coins1.js"
     }
   ]
