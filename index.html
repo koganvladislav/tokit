@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokiit</title>
+    <title>Tokit</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
         .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
@@ -68,7 +68,8 @@
         let videos = [];
         let currentIndex = 0;
         let player;
-        let coins = parseInt(localStorage.getItem('coins')) || 0;
+        let coins = 0;  // Количество монет, будет обновляться с базы данных
+        let userId = 1001; // Пример user_id, его можно динамически получать из базы данных или логина
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
@@ -116,9 +117,16 @@
         }
 
         function addCoin() {
-            coins++;
-            localStorage.setItem('coins', coins);
-            updateCoinDisplay();
+            // Отправляем запрос на сервер для добавления монеты в базу данных
+            fetch(`/api/add-coin?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    coins = data.coins;  // Получаем обновленное количество монет
+                    updateCoinDisplay();
+                })
+                .catch(error => {
+                    console.error('Ошибка при обновлении монет:', error);
+                });
         }
 
         function updateCoinDisplay() {
@@ -143,7 +151,6 @@
             }
 
             const query = selectedTopics.join("|");
-            // Добавляем "shorts" к запросу и ограничение по длительности (до 1 минуты)
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
 
             fetch(url)
@@ -164,24 +171,10 @@
         }
 
         function nextVideo() {
-    if (videos.length === 0) return;
-    currentIndex = (currentIndex + 1) % videos.length;
-    player.loadVideoById(videos[currentIndex]);
-
-    // Отправляем запрос на серверную функцию Vercel для выполнения coins1.js
-    fetch('/api/run-coins1', { method: 'POST' })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Файл coins1.js успешно выполнен');
-            } else {
-                console.error('Ошибка при выполнении файла coins1.js');
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка при вызове API:', error);
-        });
-}
+            if (videos.length === 0) return;
+            currentIndex = (currentIndex + 1) % videos.length;
+            player.loadVideoById(videos[currentIndex]);
+        }
 
         function prevVideo() {
             if (videos.length === 0) return;
