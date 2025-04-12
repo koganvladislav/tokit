@@ -1,36 +1,38 @@
 const { Pool } = require('pg');
 
+const connectionString = 'postgresql://neondb_owner:npg_oDfBsJ7Wad4k@ep-ancient-fire-ab1mjrmu-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require';
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false }
+  connectionString: connectionString,
+  max: 20, // максимальное количество клиентов в пуле
+  idleTimeoutMillis: 30000, // время простоя перед закрытием
+  connectionTimeoutMillis: 2000, // время ожидания подключения
 });
 
-module.exports = async (req, res) => {
-    const { userId } = req.query;
+// Функция для обновления монет
+async function updateCoins(userId, coinsToAdd) {
+  const client = await pool.connect();
+  
+  try {
+    console.log('Подключение к базе данных установлено');
 
-    if (!userId) {
-        return res.status(400).json({ error: "userId is required" });
-    }
+    // Начисление монет и обновление записи
+    const result = await client.query(`
+      WITH updated AS (
+        UPDATE users 
+        SET coins = coins + $1 
+        WHERE user_id = $2 
+        RETURNING user_id, coins
+      )
+      DELETE FROM users 
+      WHERE created_at < (SELECT MIN(created_at) FROM updated)
+      RETURNING user_id, coins;
+    `, [coinsToAdd, userId]);
 
-    const client = await pool.connect();
-    try {
-        // Обновляем количество монет для пользователя
-        const result = await client.query(`
-            UPDATE users
-            SET coins = coins + 1
-            WHERE user_id = $1
-            RETURNING coins;
-        `, [userId]);
-
-        if (result.rows.length > 0) {
-            return res.json({ coins: result.rows[0].coins });
-        } else {
-            return res.status(404).json({ error: "User not found" });
-        }
-    } catch (error) {
-        console.error("Ошибка при обновлении монет:", error);
-        res.status(500).json({ error: "Internal server error" });
-    } finally {
-        client.release();
-    }
-};
+    console.log('Монеты обновлены для пользователя:', result.rows);
+    
+  } catch (error) {
+    console.error('Ошибка при выполнении запроса:', error);
+  } finally {
+    client.release();
+  }
+}
