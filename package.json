@@ -1,2 +1,6 @@
-npm install pg
-npm install @vercel/node
+{
+  "dependencies": {
+    "pg": "^8.11.3",
+    "@vercel/node": "^3.0.0"
+  }
+}
