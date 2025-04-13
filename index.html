@@ -53,7 +53,7 @@
     </div>
 
     <div class="coin-counter">
-        💰: <span id="coins">0</span>
+        💰: <span id="coins">Загрузка...</span>
     </div>
 
     <script>
@@ -62,12 +62,46 @@
         let videos = [];
         let currentIndex = 0;
         let player;
-        let coins = 0;
+        let coins = null; // Изменено с 0 на null для отслеживания состояния загрузки
         let userId = 100;
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
         let interval;
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchInitialCoins();
+            initYouTubePlayer();
+        });
+
+        async function fetchInitialCoins() {
+            try {
+                const response = await fetch(`/api/get-coins?userId=${userId}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                coins = data.coins;
+                updateCoinDisplay();
+                console.log('Монеты успешно загружены:', coins);
+            } catch (error) {
+                console.error('Ошибка загрузки монет:', error);
+                coins = 0;
+                updateCoinDisplay();
+            }
+        }
+
+        function updateCoinDisplay() {
+            const display = document.getElementById('coins');
+            display.textContent = coins !== null ? coins : 'Ошибка загрузки';
+        }
+
+        function initYouTubePlayer() {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        }
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
@@ -82,7 +116,6 @@
 
         function onPlayerReady(event) {
             event.target.playVideo();
-            fetchInitialCoins();
         }
 
         function onPlayerStateChange(event) {
@@ -110,32 +143,18 @@
             clearInterval(interval);
         }
 
-        function fetchInitialCoins() {
-            fetch(`/api/get-coins?userId=${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    coins = data.coins;
-                    updateCoinDisplay();
-                })
-                .catch(error => {
-                    console.error("Ошибка при получении монет:", error);
-                });
-        }
-
-        function addCoin() {
-            fetch(`/api/add-coin?userId=${userId}`)
-                .then(response => response.json())
-                .then(data => {
-                    coins = data.coins;
-                    updateCoinDisplay();
-                })
-                .catch(error => {
-                    console.error('Ошибка при обновлении монет:', error);
-                });
-        }
-
-        function updateCoinDisplay() {
-            document.getElementById('coins').textContent = coins;
+        async function addCoin() {
+            try {
+                const response = await fetch(`/api/add-coin?userId=${userId}`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                
+                const data = await response.json();
+                coins = data.coins;
+                updateCoinDisplay();
+                console.log('Монета добавлена. Текущий баланс:', coins);
+            } catch (error) {
+                console.error('Ошибка при обновлении монет:', error);
+            }
         }
 
         function toggleTopic(button) {
@@ -193,11 +212,6 @@
                 [array[i], array[j]] = [array[j], array[i]];
             }
         }
-
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     </script>
 </body>
 </html>
