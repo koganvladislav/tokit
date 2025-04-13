@@ -1,25 +1,16 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Tokit</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
         .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
         .topic { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
         .selected { background-color: #ff5722; color: white; }
-        .video-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px auto;
-        }
-        #player {
-            width: 320px;
-            height: 560px;
-            border-radius: 15px;
-            overflow: hidden;
-        }
+        .video-container { display: flex; justify-content: center; margin: 20px auto; }
+        #player { width: 320px; height: 560px; border-radius: 15px; overflow: hidden; }
         .controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
         .nav-btn { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
         .coin-counter { font-size: 20px; margin-top: 20px; }
@@ -49,17 +40,20 @@
         <button class="topic" onclick="toggleTopic(this)" value="еда">🍔 Еда</button>
         <button class="topic" onclick="toggleTopic(this)" value="здоровье">❤️ Здоровье</button>
     </div>
+
     <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
     <div class="video-container">
         <div id="player"></div>
     </div>
+
     <div class="controls">
         <button class="nav-btn" onclick="prevVideo()">← Назад</button>
         <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
     </div>
+
     <div class="coin-counter">
-      💰: <span id="coins">0</span>
+        💰: <span id="coins">0</span>
     </div>
 
     <script>
@@ -68,8 +62,8 @@
         let videos = [];
         let currentIndex = 0;
         let player;
-        let coins = 52;  // Количество монет, будет обновляться с базы данных
-        let userId = 1001; // Пример user_id, его можно динамически получать из базы данных или логина
+        let coins = 0;
+        let userId = 1001;
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
@@ -88,7 +82,7 @@
 
         function onPlayerReady(event) {
             event.target.playVideo();
-            updateCoinDisplay();
+            fetchInitialCoins();
         }
 
         function onPlayerStateChange(event) {
@@ -116,12 +110,23 @@
             clearInterval(interval);
         }
 
+        function fetchInitialCoins() {
+            fetch(`/api/get-coins?userId=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    coins = data.coins;
+                    updateCoinDisplay();
+                })
+                .catch(error => {
+                    console.error("Ошибка при получении монет:", error);
+                });
+        }
+
         function addCoin() {
-            // Отправляем запрос на сервер для добавления монеты в базу данных
             fetch(`/api/add-coin?userId=${userId}`)
                 .then(response => response.json())
                 .then(data => {
-                    coins = data.coins;  // Получаем обновленное количество монет
+                    coins = data.coins;
                     updateCoinDisplay();
                 })
                 .catch(error => {
