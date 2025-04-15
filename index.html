@@ -63,8 +63,10 @@
     </div>
 
     <script>
-        
         const API_KEY = "AIzaSyAajvPaSxDC8NMm1Yn50W2V2Ym_TIcm4x8";
+        const API_URL = "http://localhost:3000";
+        const USER_ID = "user_" + Math.random().toString(36).substring(2, 9); // Генерируем случайный ID пользователя
+        
         let selectedTopics = [];
         let videos = [];
         let currentIndex = 0;
@@ -75,28 +77,52 @@
         let watchedTime = 0;
         let interval;
 
-        async function fetchCoins(userId) {
-  try {
-    const response = await fetch(`http://localhost:3000/api/add-coin?userId=${userId}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    console.log('Received data:', data); // Добавим лог для отладки
-    
-    if (data.coins !== undefined) {
-      return data.coins;
-    } else {
-      throw new Error('Invalid response format');
-    }
-  } catch (error) {
-    console.error('Ошибка при загрузке монет:', error);
-    // Возвращаем значение из localStorage только если API недоступен
-    return parseInt(localStorage.getItem('coins')) || 69;
-  }
-}
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initializeUser();
+        });
+
+        // Инициализация пользователя
+        async function initializeUser() {
+            try {
+                const response = await fetch(`${API_URL}/api/users/${USER_ID}`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                coins = data.coins;
+                updateCoinDisplay();
+            } catch (error) {
+                console.error("Ошибка инициализации пользователя:", error);
+            }
+        }
+
+        // Загрузить монеты из базы данных
+        async function loadCoins() {
+            try {
+                const response = await fetch(`${API_URL}/api/coins/${USER_ID}`);
+                const data = await response.json();
+                coins = data.coins;
+                updateCoinDisplay();
+            } catch (error) {
+                console.error("Ошибка загрузки монет:", error);
+            }
+        }
+
+        // Обновить монеты в базе данных
+        async function updateCoins() {
+            try {
+                await fetch(`${API_URL}/api/coins/${USER_ID}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ coins: coins }),
+                });
+            } catch (error) {
+                console.error("Ошибка обновления монет:", error);
+            }
+        }
+
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '480',
@@ -110,7 +136,6 @@
 
         function onPlayerReady(event) {
             event.target.playVideo();
-            updateCoinDisplay();
         }
 
         function onPlayerStateChange(event) {
@@ -133,12 +158,6 @@
                 }
             }, 1000);
         }
-        async function initCoins() {
-            const userId = 1001; // Здесь должен быть ваш реальный user_id
-            coins = await fetchCoins(userId);
-            updateCoinDisplay();
-        }
-        document.addEventListener('DOMContentLoaded', initCoins);
 
         function stopTracking() {
             clearInterval(interval);
@@ -146,17 +165,8 @@
 
         function addCoin() {
             coins++;
-            localStorage.setItem('coins', coins);
             updateCoinDisplay();
-            
-            // Отправляем на сервер (если нужно)
-            fetch('/api/add-coin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId: 1, coins: coins })
-            }).catch(e => console.error('Ошибка сохранения:', e));
+            updateCoins();
         }
 
         function updateCoinDisplay() {
@@ -181,7 +191,6 @@
             }
 
             const query = selectedTopics.join("|");
-            // Добавляем "shorts" к запросу и ограничение по длительности (до 1 минуты)
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
 
             fetch(url)
