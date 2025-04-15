@@ -6,7 +6,7 @@ const pool = new Pool({
 
 module.exports = async (req, res) => {
   try {
-    const result = await pool.query('SELECT coins FROM your_table_name WHERE user_id = $1', [1001]);
+    const result = await pool.query('SELECT coins FROM users WHERE user_id = $1', [1001]);
     const coins = result.rows[0]?.coins ?? null;
     res.status(200).json({ coins });
   } catch (err) {
