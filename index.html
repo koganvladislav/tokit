@@ -77,7 +77,7 @@
 
         async function fetchCoins(userId) {
             try {
-                const response = await fetch(`/api/coins?userId=${userId}`);
+                const response = await fetch(`/api/add-coin?userId=${userId}`);
                 const data = await response.json();
                 return data.coins || 0;
             } catch (error) {
