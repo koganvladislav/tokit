@@ -126,6 +126,7 @@
             coins = await fetchCoins(userId);
             updateCoinDisplay();
         }
+        document.addEventListener('DOMContentLoaded', initCoins);
 
         function stopTracking() {
             clearInterval(interval);
@@ -135,6 +136,15 @@
             coins++;
             localStorage.setItem('coins', coins);
             updateCoinDisplay();
+            
+            // Отправляем на сервер (если нужно)
+            fetch('/api/add-coin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: 1, coins: coins })
+            }).catch(e => console.error('Ошибка сохранения:', e));
         }
 
         function updateCoinDisplay() {
