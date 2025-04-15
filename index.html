@@ -1,16 +1,25 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokit</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
         .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
         .topic { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
         .selected { background-color: #ff5722; color: white; }
-        .video-container { display: flex; justify-content: center; margin: 20px auto; }
-        #player { width: 320px; height: 560px; border-radius: 15px; overflow: hidden; }
+        .video-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        #player {
+            width: 320px;
+            height: 560px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
         .controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
         .nav-btn { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
         .coin-counter { font-size: 20px; margin-top: 20px; }
@@ -40,20 +49,17 @@
         <button class="topic" onclick="toggleTopic(this)" value="еда">🍔 Еда</button>
         <button class="topic" onclick="toggleTopic(this)" value="здоровье">❤️ Здоровье</button>
     </div>
-
     <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
     <div class="video-container">
         <div id="player"></div>
     </div>
-
     <div class="controls">
         <button class="nav-btn" onclick="prevVideo()">← Назад</button>
         <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
     </div>
-
     <div class="coin-counter">
-        💰: <span id="coins">Загрузка...</span>
+      💰: <span id="coins">0</span>
     </div>
 
     <script>
@@ -62,47 +68,20 @@
         let videos = [];
         let currentIndex = 0;
         let player;
-        let coins = null; // Изменено с 0 на null для отслеживания состояния загрузки
-        let userId = 100;
+        let coins = 0;
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
         let interval;
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', async () => {
-            await fetchInitialCoins();
-            initYouTubePlayer();
-        });
-
-        async function fetchInitialCoins() {
+        import { getCoinsFromDB } from '/api/add-coin.js'
+        async function initCoins() {
             try {
-                const response = await fetch(`/api/get-coins?userId=${userId}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const data = await response.json();
-                coins = data.coins;
-                updateCoinDisplay();
-                console.log('Монеты успешно загружены:', coins);
-            } catch (error) {
-                console.error('Ошибка загрузки монет:', error);
-                coins = 0;
-                updateCoinDisplay();
+                    coins = await getCoinsFromDB(1001);
+              } catch (error) {
+            console.error('Ошибка при загрузке монет:', error);
             }
         }
-
-        function updateCoinDisplay() {
-            const display = document.getElementById('coins');
-            display.textContent = coins !== null ? coins : 'Ошибка загрузки';
-        }
-
-        function initYouTubePlayer() {
-            const tag = document.createElement('script');
-            tag.src = "https://www.youtube.com/iframe_api";
-            const firstScriptTag = document.getElementsByTagName('script')[0];
-            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-        }
-
+        initCoins();
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '480',
@@ -116,6 +95,7 @@
 
         function onPlayerReady(event) {
             event.target.playVideo();
+            updateCoinDisplay();
         }
 
         function onPlayerStateChange(event) {
@@ -143,18 +123,14 @@
             clearInterval(interval);
         }
 
-        async function addCoin() {
-            try {
-                const response = await fetch(`/api/add-coin?userId=${userId}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                
-                const data = await response.json();
-                coins = data.coins;
-                updateCoinDisplay();
-                console.log('Монета добавлена. Текущий баланс:', coins);
-            } catch (error) {
-                console.error('Ошибка при обновлении монет:', error);
-            }
+        function addCoin() {
+            coins++;
+            localStorage.setItem('coins', coins);
+            updateCoinDisplay();
+        }
+
+        function updateCoinDisplay() {
+            document.getElementById('coins').textContent = coins;
         }
 
         function toggleTopic(button) {
@@ -175,6 +151,7 @@
             }
 
             const query = selectedTopics.join("|");
+            // Добавляем "shorts" к запросу и ограничение по длительности (до 1 минуты)
             const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
 
             fetch(url)
@@ -212,6 +189,11 @@
                 [array[i], array[j]] = [array[j], array[i]];
             }
         }
+
+        const tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        const firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     </script>
 </body>
 </html>
