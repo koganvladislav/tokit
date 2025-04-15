@@ -130,8 +130,14 @@
 
         function addCoin() {
             coins++;
-            localStorage.setItem('coins', coins);
             updateCoinDisplay();
+        
+            // Обновляем БД
+            fetch('/api/addCoin', {
+                method: 'POST'
+            }).catch(() => {
+                console.warn('Не удалось обновить монеты в базе данных');
+            });
         }
 
         function updateCoinDisplay() {
