@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
     const userId = 1001;
 
     await pool.query(`
-      UPDATE your_table_name
+      UPDATE users
       SET coins = coins + 1
       WHERE user_id = $1
     `, [userId]);
