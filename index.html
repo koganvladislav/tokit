@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokit</title>
+    <title>Tokit - Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
         .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
@@ -63,30 +64,20 @@
     </div>
 
     <script>
+        const tg = window.Telegram.WebApp;
+        const userId = tg.initDataUnsafe?.user?.id; // Получаем Telegram ID
         const API_KEY = "AIzaSyAajvPaSxDC8NMm1Yn50W2V2Ym_TIcm4x8";
         let selectedTopics = [];
         let videos = [];
         let currentIndex = 0;
         let player;
         let coins = 0;
-        
-        fetch('/api/coins')
-          .then(res => res.json())
-          .then(data => {
-            coins = data.coins ?? 0;
-            updateCoinDisplay();
-          })
-          .catch(() => {
-            console.warn('Ошибка получения монет с сервера, используем localStorage');
-            coins = parseInt(localStorage.getItem('coins')) || 0;
-            updateCoinDisplay();
-          });
-        
         let videoDuration = 0;
         let isHalfWatched = false;
         let watchedTime = 0;
         let interval;
 
+        // Функция инициализации плеера YouTube
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '480',
@@ -131,12 +122,14 @@
         function addCoin() {
             coins++;
             updateCoinDisplay();
-        
-            // Обновляем БД
+
+            // Отправка данных на сервер для обновления монет в БД
             fetch('/api/addCoin', {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId })
             }).catch(() => {
-                console.warn('Не удалось обновить монеты в базе данных');
+                console.warn('Не удалось обновить монеты');
             });
         }
 
@@ -144,18 +137,25 @@
             document.getElementById('coins').textContent = coins;
         }
 
-        function toggleTopic(button) {
-            const topic = button.value;
-            if (selectedTopics.includes(topic)) {
-                selectedTopics = selectedTopics.filter(t => t !== topic);
-                button.classList.remove("selected");
-            } else {
-                selectedTopics.push(topic);
-                button.classList.add("selected");
-            }
+        // Загружаем монеты для пользователя
+        function loadCoins() {
+            fetch(`/api/coins?user_id=${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    coins = data.coins ?? 0;
+                    updateCoinDisplay();
+                });
         }
 
+        // Загрузка видео
         function loadVideos() {
+            if (!userId) {
+                alert("Не удалось получить ваш Telegram ID.");
+                return;
+            }
+
+            loadCoins();  // Загружаем монеты пользователя
+
             if (selectedTopics.length === 0) {
                 alert("Выберите хотя бы одну тему!");
                 return;
@@ -182,6 +182,7 @@
                 });
         }
 
+        // Функция для переключения видео
         function nextVideo() {
             if (videos.length === 0) return;
             currentIndex = (currentIndex + 1) % videos.length;
@@ -194,12 +195,26 @@
             player.loadVideoById(videos[currentIndex]);
         }
 
+        function toggleTopic(button) {
+            const topic = button.value;
+            if (selectedTopics.includes(topic)) {
+                selectedTopics = selectedTopics.filter(t => t !== topic);
+                button.classList.remove("selected");
+            } else {
+                selectedTopics.push(topic);
+                button.classList.add("selected");
+            }
+        }
+
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
         }
+
+        // Инициализация Telegram Web App
+        tg.ready();
 
         const tag = document.createElement('script');
         tag.src = "https://www.youtube.com/iframe_api";
