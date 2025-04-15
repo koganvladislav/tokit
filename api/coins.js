@@ -1,3 +1,4 @@
+// /api/coins.js
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -5,12 +6,30 @@ const pool = new Pool({
 });
 
 module.exports = async (req, res) => {
+  const userId = parseInt(req.query.user_id);
+
+  if (!userId) {
+    return res.status(400).json({ error: 'Missing user_id' });
+  }
+
   try {
-    const result = await pool.query('SELECT coins FROM users WHERE user_id = $1', [1001]);
-    const coins = result.rows[0]?.coins ?? null;
-    res.status(200).json({ coins });
+    const { rows } = await pool.query(
+      'SELECT coins FROM users WHERE user_id = $1',
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      // если нет юзера — создать
+      await pool.query(
+        'INSERT INTO your_table_name (user_id, coins, created_at) VALUES ($1, $2, NOW())',
+        [userId, 0]
+      );
+      return res.status(200).json({ coins: 0 });
+    }
+
+    res.status(200).json({ coins: rows[0].coins });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch coins' });
+    res.status(500).json({ error: 'DB error' });
   }
 };
