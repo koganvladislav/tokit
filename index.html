@@ -1,238 +1,31 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokit</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
-        .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
-        .topic { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
-        .selected { background-color: #ff5722; color: white; }
-        .video-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px auto;
-        }
-        #player {
-            width: 320px;
-            height: 560px;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        .controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
-        .nav-btn { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
-        .coin-counter { font-size: 20px; margin-top: 20px; }
-        .load-btn {
-            padding: 12px 24px;
-            background-color: #ff5722;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>Coins</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      font-size: 5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
-    <h2>Выберите интересующие вас темы:</h2>
-    <div class="topics">
-        <button class="topic" onclick="toggleTopic(this)" value="спорт">🏋️ Спорт</button>
-        <button class="topic" onclick="toggleTopic(this)" value="игры">🎮 Игры</button>
-        <button class="topic" onclick="toggleTopic(this)" value="музыка">🎵 Музыка</button>
-        <button class="topic" onclick="toggleTopic(this)" value="развлечения">🎭 Развлечения</button>
-        <button class="topic" onclick="toggleTopic(this)" value="образование">📚 Образование</button>
-        <button class="topic" onclick="toggleTopic(this)" value="технологии">💻 Технологии</button>
-        <button class="topic" onclick="toggleTopic(this)" value="авто">🚗 Авто</button>
-        <button class="topic" onclick="toggleTopic(this)" value="путешествия">✈️ Путешествия</button>
-        <button class="topic" onclick="toggleTopic(this)" value="еда">🍔 Еда</button>
-        <button class="topic" onclick="toggleTopic(this)" value="здоровье">❤️ Здоровье</button>
-    </div>
-    <button class="load-btn" onclick="loadVideos()">Показать видео</button>
+  <div id="coins">Loading...</div>
 
-    <div class="video-container">
-        <div id="player"></div>
-    </div>
-    <div class="controls">
-        <button class="nav-btn" onclick="prevVideo()">← Назад</button>
-        <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
-    </div>
-    <div class="coin-counter">
-      💰: <span id="coins">0</span>
-    </div>
-
-    <script>
-        const API_KEY = "AIzaSyAajvPaSxDC8NMm1Yn50W2V2Ym_TIcm4x8";
-        const API_URL = "http://localhost:3000";
-        const USER_ID = "user_" + Math.random().toString(36).substring(2, 9); // Генерируем случайный ID пользователя
-        
-        let selectedTopics = [];
-        let videos = [];
-        let currentIndex = 0;
-        let player;
-        let coins = 0;
-        let videoDuration = 0;
-        let isHalfWatched = false;
-        let watchedTime = 0;
-        let interval;
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', async () => {
-            await initializeUser();
-        });
-
-        // Инициализация пользователя
-        async function initializeUser() {
-            try {
-                const response = await fetch(`${API_URL}/api/users/${USER_ID}`, {
-                    method: 'POST'
-                });
-                const data = await response.json();
-                coins = data.coins;
-                updateCoinDisplay();
-            } catch (error) {
-                console.error("Ошибка инициализации пользователя:", error);
-            }
-        }
-
-        // Загрузить монеты из базы данных
-        async function loadCoins() {
-            try {
-                const response = await fetch(`${API_URL}/api/coins/${USER_ID}`);
-                const data = await response.json();
-                coins = data.coins;
-                updateCoinDisplay();
-            } catch (error) {
-                console.error("Ошибка загрузки монет:", error);
-            }
-        }
-
-        // Обновить монеты в базе данных
-        async function updateCoins() {
-            try {
-                await fetch(`${API_URL}/api/coins/${USER_ID}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ coins: coins }),
-                });
-            } catch (error) {
-                console.error("Ошибка обновления монет:", error);
-            }
-        }
-
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '480',
-                width: '270',
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo();
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                videoDuration = player.getDuration();
-                isHalfWatched = false;
-                watchedTime = 0;
-                startTracking();
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                stopTracking();
-            }
-        }
-
-        function startTracking() {
-            interval = setInterval(() => {
-                watchedTime++;
-                if (watchedTime >= videoDuration / 2 && !isHalfWatched) {
-                    isHalfWatched = true;
-                    addCoin();
-                }
-            }, 1000);
-        }
-
-        function stopTracking() {
-            clearInterval(interval);
-        }
-
-        function addCoin() {
-            coins++;
-            updateCoinDisplay();
-            updateCoins();
-        }
-
-        function updateCoinDisplay() {
-            document.getElementById('coins').textContent = coins;
-        }
-
-        function toggleTopic(button) {
-            const topic = button.value;
-            if (selectedTopics.includes(topic)) {
-                selectedTopics = selectedTopics.filter(t => t !== topic);
-                button.classList.remove("selected");
-            } else {
-                selectedTopics.push(topic);
-                button.classList.add("selected");
-            }
-        }
-
-        function loadVideos() {
-            if (selectedTopics.length === 0) {
-                alert("Выберите хотя бы одну тему!");
-                return;
-            }
-
-            const query = selectedTopics.join("|");
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
-
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    videos = data.items.map(item => item.id.videoId);
-                    if (videos.length > 0) {
-                        shuffleArray(videos);
-                        player.loadVideoById(videos[0]);
-                    } else {
-                        alert("Не найдено подходящих видео. Попробуйте другие темы.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки видео:", error);
-                    alert("Произошла ошибка при загрузке видео. Попробуйте позже.");
-                });
-        }
-
-        function nextVideo() {
-            if (videos.length === 0) return;
-            currentIndex = (currentIndex + 1) % videos.length;
-            player.loadVideoById(videos[currentIndex]);
-        }
-
-        function prevVideo() {
-            if (videos.length === 0) return;
-            currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-            player.loadVideoById(videos[currentIndex]);
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    </script>
+  <script>
+    fetch('/api/coins')
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('coins').textContent = data.coins ?? 'No data';
+      })
+      .catch(() => {
+        document.getElementById('coins').textContent = 'Error';
+      });
+  </script>
 </body>
 </html>
