@@ -137,7 +137,7 @@
         let selectedTopics = [];
         let videos = [];
         let currentIndex = 0;
-        let player document.getElementById("player");
+        let player;
         let coins = 0;
         let videoDuration = 0;
         let isHalfWatched = false;
@@ -216,51 +216,51 @@
 
         // Загрузка видео
         function loadVideos() {
-    fetch("/api/videos")
-        .then(res => res.json())
-        .then(data => {
-            videos = data.videos;
-            if (videos.length > 0) {
-                shuffleArray(videos);
-                loadVideo(0);
-            } else {
-                alert("Нет доступных видео");
+            if (!userId) {
+                alert("Не удалось получить ваш Telegram ID.");
+                return;
             }
-        });
-}
-        function loadVideo(index) {
-    if (!videos[index]) return;
-    player.src = videos[index];
-    player.load();
-    currentIndex = index;
-    isHalfWatched = false;
-}
-        player.addEventListener('play', () => {
-    let duration = player.duration;
-    let watched = 0;
-    clearInterval(interval);
-    interval = setInterval(() => {
-        watched++;
-        if (watched >= duration / 2 && !isHalfWatched) {
-            isHalfWatched = true;
-            addCoin();
-        }
-    }, 1000);
-});
-        player.addEventListener('pause', () => clearInterval(interval));
-player.addEventListener('ended', () => clearInterval(interval));
 
+            loadCoins();  // Загружаем монеты пользователя
+
+            if (selectedTopics.length === 0) {
+                alert("Выберите хотя бы одну тему!");
+                return;
+            }
+
+            const query = selectedTopics.join("|");
+            // Добавляем "shorts" к запросу и ограничение по длительности (до 1 минуты)
+            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    videos = data.items.map(item => item.id.videoId);
+                    if (videos.length > 0) {
+                        shuffleArray(videos);
+                        player.loadVideoById(videos[0]);
+                    } else {
+                        alert("Не найдено подходящих видео. Попробуйте другие темы.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Ошибка загрузки видео:", error);
+                    alert("Произошла ошибка при загрузке видео. Попробуйте позже.");
+                });
+        }
 
         // Функция для переключения видео
         function nextVideo() {
-    if (videos.length === 0) return;
-    loadVideo((currentIndex + 1) % videos.length);
-}
+            if (videos.length === 0) return;
+            currentIndex = (currentIndex + 1) % videos.length;
+            player.loadVideoById(videos[currentIndex]);
+        }
 
         function prevVideo() {
-    if (videos.length === 0) return;
-    loadVideo((currentIndex - 1 + videos.length) % videos.length);
-}
+            if (videos.length === 0) return;
+            currentIndex = (currentIndex - 1 + videos.length) % videos.length;
+            player.loadVideoById(videos[currentIndex]);
+        }
 
         function toggleTopic(button) {
             const topic = button.value;
