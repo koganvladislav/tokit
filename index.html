@@ -6,102 +6,35 @@
     <title>Tokit - Telegram Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 20px;
-        background-color: #121212;
-        color: #ffffff;
-    }
-
-    h2 {
-        color: #ffffff;
-    }
-
-    .topics {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin: 20px 0;
-    }
-
-    .topic {
-        padding: 10px 15px;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 16px;
-        background-color: #444;
-        color: #fff;
-        transition: background-color 0.3s, transform 0.2s;
-    }
-
-    .topic:hover {
-        transform: scale(1.05);
-    }
-
-    .selected {
-        background-color: #ff5722;
-        color: white;
-    }
-
-    .video-container {
-        display: flex;
-        justify-content: center;
-        margin: 20px auto;
-    }
-
-    #player {
-        width: 320px;
-        height: 560px;
-        border-radius: 15px;
-        overflow: hidden;
-    }
-
-    .controls {
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .nav-btn {
-        padding: 10px 15px;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 16px;
-        background-color: #333;
-        color: #fff;
-    }
-
-    .nav-btn:hover {
-        background-color: #555;
-    }
-
-    .coin-counter {
-        font-size: 20px;
-        margin-top: 20px;
-        color: #ffeb3b;
-    }
-
-    .load-btn {
-        padding: 12px 24px;
-        background-color: #ff5722;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-bottom: 20px;
-    }
-
-    .load-btn:hover {
-        background-color: #e64a19;
-    }
-</style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 20px; }
+        .topics { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
+        .topic { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
+        .selected { background-color: #ff5722; color: white; }
+        .video-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px auto;
+        }
+        #player {
+            width: 320px;
+            height: 560px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        .controls { margin-top: 10px; display: flex; justify-content: center; gap: 10px; }
+        .nav-btn { padding: 10px 15px; border: none; border-radius: 20px; cursor: pointer; font-size: 16px; }
+        .coin-counter { font-size: 20px; margin-top: 20px; }
+        .load-btn {
+            padding: 12px 24px;
+            background-color: #ff5722;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+    </style>
 </head>
 <body>
     <h2>Выберите интересующие вас темы:</h2>
