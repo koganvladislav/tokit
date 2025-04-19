@@ -1,4 +1,4 @@
-// api/addCoin.js
+// /api/addCoin.js
 const { Pool } = require('pg');
 
 const pool = new Pool({
@@ -6,22 +6,22 @@ const pool = new Pool({
 });
 
 module.exports = async (req, res) => {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Only POST allowed' });
-  }
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Only POST allowed' });
 
   try {
-    const userId = 1001;
+    const { user_id } = req.body;
+
+    if (!user_id) return res.status(400).json({ error: 'Missing user_id' });
 
     await pool.query(`
-      UPDATE users
-      SET coins = coins + 1
-      WHERE user_id = $1
-    `, [userId]);
+      INSERT INTO your_table_name (user_id, coins, created_at)
+      VALUES ($1, 1, NOW())
+      ON CONFLICT (user_id) DO UPDATE SET coins = your_table_name.coins + 1
+    `, [user_id]);
 
     res.status(200).json({ message: 'Coin added' });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Database error' });
+    res.status(500).json({ error: 'DB error' });
   }
 };
