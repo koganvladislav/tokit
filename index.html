@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokit - Telegram Mini App</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
     body {
         font-family: Arial, sans-serif;
@@ -120,7 +119,9 @@
     <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
     <div class="video-container">
-        <div id="player"></div>
+        <video id="player" controls>
+            Ваш браузер не поддерживает элемент video.
+        </video>
     </div>
     <div class="controls">
         <button class="nav-btn" onclick="prevVideo()">← Назад</button>
@@ -133,76 +134,23 @@
     <script>
         const tg = window.Telegram.WebApp;
         const userId = tg.initDataUnsafe?.user?.id; // Получаем Telegram ID
-        const API_KEY = "AIzaSyAajvPaSxDC8NMm1Yn50W2V2Ym_TIcm4x8";
         let selectedTopics = [];
         let videos = [];
         let currentIndex = 0;
-        let player;
         let coins = 0;
-        let videoDuration = 0;
-        let isHalfWatched = false;
-        let watchedTime = 0;
-        let interval;
 
-        // Функция инициализации плеера YouTube
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '480',
-                width: '270',
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo();
-            updateCoinDisplay();
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                videoDuration = player.getDuration();
-                isHalfWatched = false;
-                watchedTime = 0;
-                startTracking();
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                stopTracking();
-            }
-        }
-
-        function startTracking() {
-            interval = setInterval(() => {
-                watchedTime++;
-                if (watchedTime >= videoDuration / 2 && !isHalfWatched) {
-                    isHalfWatched = true;
-                    addCoin();
-                }
-            }, 1000);
-        }
-
-        function stopTracking() {
-            clearInterval(interval);
-        }
-
-        function addCoin() {
-            coins++;
-            updateCoinDisplay();
-
-            // Отправка данных на сервер для обновления монет в БД
-            fetch('/api/addCoin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId })
-            }).catch(() => {
-                console.warn('Не удалось обновить монеты');
-            });
-        }
-
-        function updateCoinDisplay() {
-            document.getElementById('coins').textContent = coins;
-        }
+        const topicsToFolder = {
+            спорт: 'sport',
+            игры: 'games',
+            музыка: 'music',
+            развлечения: 'entertainment',
+            образование: 'education',
+            технологии: 'tech',
+            авто: 'vehicles',
+            путешествия: 'trip',
+            еда: 'food',
+            здоровье: 'health'
+        };
 
         // Загружаем монеты для пользователя
         function loadCoins() {
@@ -214,7 +162,12 @@
                 });
         }
 
-        // Загрузка видео
+        // Функция для отображения монет
+        function updateCoinDisplay() {
+            document.getElementById('coins').textContent = coins;
+        }
+
+        // Загружаем видео с локального сервера
         function loadVideos() {
             if (!userId) {
                 alert("Не удалось получить ваш Telegram ID.");
@@ -228,40 +181,48 @@
                 return;
             }
 
-            const query = selectedTopics.join("|");
-            // Добавляем "shorts" к запросу и ограничение по длительности (до 1 минуты)
-            const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q=${encodeURIComponent(query + " shorts")}&maxResults=50&videoDuration=short&key=${API_KEY}`;
+            const videoFolder = selectedTopics.map(topic => topicsToFolder[topic]);
+            let allVideos = [];
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    videos = data.items.map(item => item.id.videoId);
-                    if (videos.length > 0) {
-                        shuffleArray(videos);
-                        player.loadVideoById(videos[0]);
-                    } else {
-                        alert("Не найдено подходящих видео. Попробуйте другие темы.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки видео:", error);
-                    alert("Произошла ошибка при загрузке видео. Попробуйте позже.");
-                });
+            // Собираем все видео из выбранных папок
+            videoFolder.forEach(folder => {
+                fetch(`/api/videos?topic=${folder}`)
+                    .then(res => res.json())
+                    .then(files => {
+                        allVideos = [...allVideos, ...files];
+                        if (allVideos.length > 0) {
+                            shuffleArray(allVideos);
+                            loadVideo(allVideos[0]);
+                        } else {
+                            alert("Не найдено подходящих видео. Попробуйте другие темы.");
+                        }
+                    })
+                    .catch(() => alert("Ошибка загрузки видео"));
+            });
         }
 
-        // Функция для переключения видео
+        // Функция для загрузки видео в плеер
+        function loadVideo(videoFile) {
+            const player = document.getElementById('player');
+            player.src = `/videos/${videoFile}`;
+            player.play();
+        }
+
+        // Переключение на следующее видео
         function nextVideo() {
             if (videos.length === 0) return;
             currentIndex = (currentIndex + 1) % videos.length;
-            player.loadVideoById(videos[currentIndex]);
+            loadVideo(videos[currentIndex]);
         }
 
+        // Переключение на предыдущее видео
         function prevVideo() {
             if (videos.length === 0) return;
             currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-            player.loadVideoById(videos[currentIndex]);
+            loadVideo(videos[currentIndex]);
         }
 
+        // Переключение выбранной темы
         function toggleTopic(button) {
             const topic = button.value;
             if (selectedTopics.includes(topic)) {
@@ -273,20 +234,13 @@
             }
         }
 
+        // Функция для случайной сортировки массива
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [array[i], array[j]] = [array[j], array[i]];
             }
         }
-
-        // Инициализация Telegram Web App
-        tg.ready();
-
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     </script>
 </body>
 </html>
