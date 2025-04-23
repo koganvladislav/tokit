@@ -4,122 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tokit - Telegram Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #121212;
-            color: #ffffff;
-        }
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+        background-color: #121212;
+        color: #ffffff;
+    }
 
-        h2 {
-            color: #ffffff;
-        }
+    h2 {
+        color: #ffffff;
+    }
 
-        .topics {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
+    .topics {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin: 20px 0;
+    }
 
-        .topic {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            background-color: #444;
-            color: #fff;
-            transition: background-color 0.3s, transform 0.2s;
-        }
+    .topic {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 16px;
+        background-color: #444;
+        color: #fff;
+        transition: background-color 0.3s, transform 0.2s;
+    }
 
-        .topic:hover {
-            transform: scale(1.05);
-        }
+    .topic:hover {
+        transform: scale(1.05);
+    }
 
-        .selected {
-            background-color: #ff5722;
-            color: white;
-        }
+    .selected {
+        background-color: #ff5722;
+        color: white;
+    }
 
-        .video-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px auto;
-        }
+    .video-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px auto;
+    }
 
-        #player {
-            width: 320px;
-            height: 560px;
-            border-radius: 15px;
-            overflow: hidden;
-        }
+    #player {
+        width: 320px;
+        height: 560px;
+        border-radius: 15px;
+        overflow: hidden;
+        background-color: #000;
+    }
 
-        .controls {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
+    .controls {
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
 
-        .nav-btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            background-color: #333;
-            color: #fff;
-        }
+    .nav-btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 16px;
+        background-color: #333;
+        color: #fff;
+    }
 
-        .nav-btn:hover {
-            background-color: #555;
-        }
+    .nav-btn:hover {
+        background-color: #555;
+    }
 
-        .coin-counter {
-            font-size: 20px;
-            margin-top: 20px;
-            color: #ffeb3b;
-        }
+    .coin-counter {
+        font-size: 20px;
+        margin-top: 20px;
+        color: #ffeb3b;
+    }
 
-        .load-btn {
-            padding: 12px 24px;
-            background-color: #ff5722;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
+    .load-btn {
+        padding: 12px 24px;
+        background-color: #ff5722;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
 
-        .load-btn:hover {
-            background-color: #e64a19;
-        }
-    </style>
+    .load-btn:hover {
+        background-color: #e64a19;
+    }
+</style>
 </head>
 <body>
     <h2>Выберите интересующие вас темы:</h2>
     <div class="topics">
-        <button class="topic" value="спорт">🏋️ Спорт</button>
-        <button class="topic" value="игры">🎮 Игры</button>
-        <button class="topic" value="музыка">🎵 Музыка</button>
-        <button class="topic" value="развлечения">🎭 Развлечения</button>
-        <button class="topic" value="образование">📚 Образование</button>
-        <button class="topic" value="технологии">💻 Технологии</button>
-        <button class="topic" value="авто">🚗 Авто</button>
-        <button class="topic" value="путешествия">✈️ Путешествия</button>
-        <button class="topic" value="еда">🍔 Еда</button>
-        <button class="topic" value="здоровье">❤️ Здоровье</button>
+        <button class="topic" onclick="toggleTopic(this)" value="спорт">🏋️ Спорт</button>
+        <button class="topic" onclick="toggleTopic(this)" value="игры">🎮 Игры</button>
+        <button class="topic" onclick="toggleTopic(this)" value="музыка">🎵 Музыка</button>
+        <button class="topic" onclick="toggleTopic(this)" value="развлечения">🎭 Развлечения</button>
+        <button class="topic" onclick="toggleTopic(this)" value="образование">📚 Образование</button>
+        <button class="topic" onclick="toggleTopic(this)" value="технологии">💻 Технологии</button>
+        <button class="topic" onclick="toggleTopic(this)" value="авто">🚗 Авто</button>
+        <button class="topic" onclick="toggleTopic(this)" value="путешествия">✈️ Путешествия</button>
+        <button class="topic" onclick="toggleTopic(this)" value="еда">🍔 Еда</button>
+        <button class="topic" onclick="toggleTopic(this)" value="здоровье">❤️ Здоровье</button>
     </div>
     <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
     <div class="video-container">
-        <div id="player"></div>
+        <video id="player" controls></video>
     </div>
     <div class="controls">
         <button class="nav-btn" onclick="prevVideo()">← Назад</button>
@@ -130,61 +132,87 @@
     </div>
 
     <script>
+        const tg = window.Telegram.WebApp;
+        const userId = tg.initDataUnsafe?.user?.id; // Получаем Telegram ID
+
+        // Массивы с путями к видеофайлам по категориям
+        const videoPaths = {
+            education: [
+                "videos/education/video1.mp4", "videos/education/video2.mp4", "videos/education/video3.mp4", "videos/education/video4.mp4",
+                "videos/education/video5.mp4", "videos/education/video6.mp4", "videos/education/video7.mp4", "videos/education/video8.mp4",
+                "videos/education/video9.mp4", "videos/education/video10.mp4"
+            ],
+            entertainment: [
+                "videos/entertainment/video1.mp4", "videos/entertainment/video2.mp4", "videos/entertainment/video3.mp4", "videos/entertainment/video4.mp4",
+                "videos/entertainment/video5.mp4", "videos/entertainment/video6.mp4", "videos/entertainment/video7.mp4", "videos/entertainment/video8.mp4",
+                "videos/entertainment/video9.mp4", "videos/entertainment/video10.mp4"
+            ],
+            food: [
+                "videos/food/video1.mp4", "videos/food/video2.mp4", "videos/food/video3.mp4", "videos/food/video4.mp4",
+                "videos/food/video5.mp4", "videos/food/video6.mp4", "videos/food/video7.mp4", "videos/food/video8.mp4",
+                "videos/food/video9.mp4", "videos/food/video10.mp4"
+            ],
+            games: [
+                "videos/games/video1.mp4", "videos/games/video2.mp4", "videos/games/video3.mp4", "videos/games/video4.mp4",
+                "videos/games/video5.mp4", "videos/games/video6.mp4", "videos/games/video7.mp4", "videos/games/video8.mp4",
+                "videos/games/video9.mp4", "videos/games/video10.mp4", "videos/games/video11.mp4", "videos/games/video12.mp4",
+                "videos/games/video13.mp4", "videos/games/video14.mp4", "videos/games/video15.mp4", "videos/games/video16.mp4",
+                "videos/games/video17.mp4", "videos/games/video18.mp4", "videos/games/video19.mp4"
+            ],
+            health: [
+                "videos/health/video1.mp4", "videos/health/video2.mp4", "videos/health/video3.mp4", "videos/health/video4.mp4",
+                "videos/health/video5.mp4", "videos/health/video6.mp4", "videos/health/video7.mp4", "videos/health/video8.mp4",
+                "videos/health/video9.mp4", "videos/health/video10.mp4", "videos/health/video11.mp4", "videos/health/video12.mp4"
+            ],
+            music: [
+                "videos/music/video1.mp4", "videos/music/video2.mp4", "videos/music/video3.mp4", "videos/music/video4.mp4",
+                "videos/music/video5.mp4", "videos/music/video6.mp4", "videos/music/video7.mp4", "videos/music/video8.mp4",
+                "videos/music/video9.mp4", "videos/music/video10.mp4", "videos/music/video11.mp4", "videos/music/video12.mp4",
+                "videos/music/video13.mp4", "videos/music/video14.mp4", "videos/music/video15.mp4", "videos/music/video16.mp4",
+                "videos/music/video17.mp4", "videos/music/video18.mp4", "videos/music/video19.mp4", "videos/music/video20.mp4"
+            ],
+            sport: [
+                "videos/sport/video1.mp4", "videos/sport/video2.mp4", "videos/sport/video3.mp4", "videos/sport/video4.mp4",
+                "videos/sport/video5.mp4", "videos/sport/video6.mp4", "videos/sport/video7.mp4", "videos/sport/video8.mp4",
+                "videos/sport/video9.mp4", "videos/sport/video10.mp4", "videos/sport/video11.mp4", "videos/sport/video12.mp4",
+                "videos/sport/video13.mp4", "videos/sport/video14.mp4", "videos/sport/video15.mp4", "videos/sport/video16.mp4",
+                "videos/sport/video17.mp4"
+            ],
+            tech: [
+                "videos/tech/video1.mp4", "videos/tech/video2.mp4", "videos/tech/video3.mp4", "videos/tech/video4.mp4",
+                "videos/tech/video5.mp4", "videos/tech/video6.mp4", "videos/tech/video7.mp4", "videos/tech/video8.mp4",
+                "videos/tech/video9.mp4", "videos/tech/video10.mp4", "videos/tech/video11.mp4", "videos/tech/video12.mp4",
+                "videos/tech/video13.mp4", "videos/tech/video14.mp4", "videos/tech/video15.mp4", "videos/tech/video16.mp4",
+                "videos/tech/video17.mp4"
+            ],
+            trip: [
+                "videos/trip/video1.mp4", "videos/trip/video2.mp4", "videos/trip/video3.mp4", "videos/trip/video4.mp4",
+                "videos/trip/video5.mp4", "videos/trip/video6.mp4", "videos/trip/video7.mp4", "videos/trip/video8.mp4",
+                "videos/trip/video9.mp4", "videos/trip/video10.mp4", "videos/trip/video11.mp4", "videos/trip/video12.mp4",
+                "videos/trip/video13.mp4"
+            ],
+            vehicles: [
+                "videos/vehicles/video1.mp4", "videos/vehicles/video2.mp4", "videos/vehicles/video3.mp4", "videos/vehicles/video4.mp4",
+                "videos/vehicles/video5.mp4", "videos/vehicles/video6.mp4", "videos/vehicles/video7.mp4", "videos/vehicles/video8.mp4",
+                "videos/vehicles/video9.mp4", "videos/vehicles/video10.mp4", "videos/vehicles/video11.mp4", "videos/vehicles/video12.mp4",
+                "videos/vehicles/video13.mp4", "videos/vehicles/video14.mp4", "videos/vehicles/video15.mp4", "videos/vehicles/video16.mp4",
+                "videos/vehicles/video17.mp4", "videos/vehicles/video18.mp4", "videos/vehicles/video19.mp4", "videos/vehicles/video20.mp4"
+            ]
+        };
+        
         let selectedTopics = [];
         let videos = [];
         let currentIndex = 0;
-        let player;
         let coins = 0;
-        let videoDuration = 0;
-        let isHalfWatched = false;
-        let watchedTime = 0;
-        let interval;
 
-        // Функция инициализации плеера YouTube
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('player', {
-                height: '480',
-                width: '270',
-                events: {
-                    'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange
-                }
-            });
-        }
-
-        function onPlayerReady(event) {
-            event.target.playVideo();
-            updateCoinDisplay();
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-                videoDuration = player.getDuration();
-                isHalfWatched = false;
-                watchedTime = 0;
-                startTracking();
-            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
-                stopTracking();
-            }
-        }
-
-        function startTracking() {
-            interval = setInterval(() => {
-                watchedTime++;
-                if (watchedTime >= videoDuration / 2 && !isHalfWatched) {
-                    isHalfWatched = true;
-                    addCoin();
-                }
-            }, 1000);
-        }
-
-        function stopTracking() {
-            clearInterval(interval);
-        }
-
-        function addCoin() {
-            coins++;
-            updateCoinDisplay();
+        // Загружаем монеты для пользователя
+        function loadCoins() {
+            fetch(`/api/coins?user_id=${userId}`)
+                .then(res => res.json())
+                .then(data => {
+                    coins = data.coins ?? 0;
+                    updateCoinDisplay();
+                });
         }
 
         function updateCoinDisplay() {
@@ -192,43 +220,45 @@
         }
 
         function loadVideos() {
+            if (!userId) {
+                alert("Не удалось получить ваш Telegram ID.");
+                return;
+            }
+
+            loadCoins();  // Загружаем монеты пользователя
+
             if (selectedTopics.length === 0) {
                 alert("Выберите хотя бы одну тему!");
                 return;
             }
 
-            // Здесь идет запрос на сервер, который должен вернуть список видео по выбранным темам.
-            const query = selectedTopics.join("|");
-            // Подставьте ваш реальный API для получения видео.
-            fetch(`/api/videos?topic=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    videos = data;
-                    if (videos.length > 0) {
-                        shuffleArray(videos);
-                        // Здесь видео будет воспроизводиться с сервера.
-                        player.loadVideoById(videos[0]);
-                    } else {
-                        alert("Не найдено подходящих видео. Попробуйте другие темы.");
-                    }
-                })
-                .catch(error => {
-                    console.error("Ошибка загрузки видео:", error);
-                    alert("Произошла ошибка при загрузке видео. Попробуйте позже.");
-                });
+            // Составляем список видео по выбранным темам
+            videos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
+            if (videos.length > 0) {
+                shuffleArray(videos);
+                playVideo(videos[0]);
+            } else {
+                alert("Не найдено подходящих видео. Попробуйте другие темы.");
+            }
         }
 
         // Функция для переключения видео
         function nextVideo() {
             if (videos.length === 0) return;
             currentIndex = (currentIndex + 1) % videos.length;
-            player.loadVideoById(videos[currentIndex]);
+            playVideo(videos[currentIndex]);
         }
 
         function prevVideo() {
             if (videos.length === 0) return;
             currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-            player.loadVideoById(videos[currentIndex]);
+            playVideo(videos[currentIndex]);
+        }
+
+        function playVideo(videoPath) {
+            const player = document.getElementById('player');
+            player.src = videoPath;
+            player.play();
         }
 
         function toggleTopic(button) {
@@ -249,14 +279,8 @@
             }
         }
 
-        // Привязка события для кнопок
-        document.querySelectorAll('.topic').forEach(button => {
-            button.addEventListener('click', function() {
-                toggleTopic(this);
-            });
-        });
+        // Инициализация Telegram Web App
+        tg.ready();
     </script>
-
-    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
