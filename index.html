@@ -220,27 +220,11 @@
         }
 
         function loadVideos() {
-            if (!userId) {
-                alert("Не удалось получить ваш Telegram ID.");
-                return;
-            }
-
-            loadCoins();  // Загружаем монеты пользователя
-
-            if (selectedTopics.length === 0) {
-                alert("Выберите хотя бы одну тему!");
-                return;
-            }
-
-            // Составляем список видео по выбранным темам
-            videos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
-            if (videos.length > 0) {
-                shuffleArray(videos);
-                playVideo(videos[0]);
-            } else {
-                alert("Не найдено подходящих видео. Попробуйте другие темы.");
-            }
-        }
+    const player = document.getElementById('player');
+    const videoPath = "videos/games/video1.mp4";
+    player.src = videoPath;
+    player.play();
+}
 
         // Функция для переключения видео
         function nextVideo() {
