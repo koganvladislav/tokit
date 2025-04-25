@@ -1,264 +1,280 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokit1</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #121212;
-            color: #ffffff;
-        }
-        h2 {
-            color: #ffffff;
-        }
-        .topics {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        .topic {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            background-color: #444;
-            color: #fff;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-        .topic:hover {
-            transform: scale(1.05);
-        }
-        .selected {
-            background-color: #ff5722;
-            color: white;
-        }
-        .video-container {
-            display: flex;
-            justify-content: center;
-            margin: 20px auto;
-        }
-        #player {
-            width: 320px;
-            height: 560px;
-            border-radius: 15px;
-            overflow: hidden;
-            background-color: #000;
-        }
-        .controls {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .nav-btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 16px;
-            background-color: #333;
-            color: #fff;
-        }
-        .nav-btn:hover {
-            background-color: #555;
-        }
-        .coin-counter {
-            font-size: 20px;
-            margin-top: 20px;
-            color: #ffeb3b;
-        }
-        .load-btn {
-            padding: 12px 24px;
-            background-color: #ff5722;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-bottom: 20px;
-        }
-        .load-btn:hover {
-            background-color: #e64a19;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tokit1</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      background-color: #121212;
+      color: #ffffff;
+    }
+
+    h2 {
+      color: #ffffff;
+    }
+
+    .topics {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .topic {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      background-color: #444;
+      color: #fff;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .topic:hover {
+      transform: scale(1.05);
+    }
+
+    .selected {
+      background-color: #ff5722;
+      color: white;
+    }
+
+    .video-container {
+      display: flex;
+      justify-content: center;
+      margin: 20px auto;
+    }
+
+    #player {
+      width: 320px;
+      height: 560px;
+      border-radius: 15px;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 16px;
+      background-color: #333;
+      color: #fff;
+    }
+
+    .nav-btn:hover {
+      background-color: #555;
+    }
+
+    .coin-counter {
+      font-size: 20px;
+      margin-top: 20px;
+      color: #ffeb3b;
+    }
+
+    .load-btn {
+      padding: 12px 24px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .load-btn:hover {
+      background-color: #e64a19;
+    }
+  </style>
 </head>
 <body>
-    <h2>Выберите интересующие вас темы:</h2>
-    <div class="topics">
-        <button class="topic" onclick="toggleTopic(this)" value="sport">🏋️ Спорт</button>
-        <button class="topic" onclick="toggleTopic(this)" value="games">🎮 Игры</button>
-        <button class="topic" onclick="toggleTopic(this)" value="music">🎵 Музыка</button>
-        <button class="topic" onclick="toggleTopic(this)" value="entertainment">🎭 Развлечения</button>
-        <button class="topic" onclick="toggleTopic(this)" value="education">📚 Образование</button>
-        <button class="topic" onclick="toggleTopic(this)" value="tech">💻 Технологии</button>
-        <button class="topic" onclick="toggleTopic(this)" value="vehicles">🚗 Авто</button>
-        <button class="topic" onclick="toggleTopic(this)" value="trip">✈️ Путешествия</button>
-        <button class="topic" onclick="toggleTopic(this)" value="food">🍔 Еда</button>
-        <button class="topic" onclick="toggleTopic(this)" value="health">❤️ Здоровье</button>
-    </div>
-    <button class="load-btn" onclick="loadVideos()">Показать видео</button>
+  <h2>Выберите интересующие вас темы:</h2>
+  <div class="topics">
+    <button class="topic" onclick="toggleTopic(this)" value="sport">🏋️ Спорт</button>
+    <button class="topic" onclick="toggleTopic(this)" value="games">🎮 Игры</button>
+    <button class="topic" onclick="toggleTopic(this)" value="music">🎵 Музыка</button>
+    <button class="topic" onclick="toggleTopic(this)" value="entertainment">🎭 Развлечения</button>
+    <button class="topic" onclick="toggleTopic(this)" value="education">📚 Образование</button>
+    <button class="topic" onclick="toggleTopic(this)" value="tech">💻 Технологии</button>
+    <button class="topic" onclick="toggleTopic(this)" value="vehicles">🚗 Авто</button>
+    <button class="topic" onclick="toggleTopic(this)" value="trip">✈️ Путешествия</button>
+    <button class="topic" onclick="toggleTopic(this)" value="food">🍔 Еда</button>
+    <button class="topic" onclick="toggleTopic(this)" value="health">❤️ Здоровье</button>
+  </div>
 
-    <div class="video-container">
-        <video id="player" controls></video>
-    </div>
-    <div class="controls">
-        <button class="nav-btn" onclick="prevVideo()">← Назад</button>
-        <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
-    </div>
-    <div class="coin-counter">
-        💰: <span id="coins">0</span>
-    </div>
+  <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        const userId = tg.initDataUnsafe?.user?.id;
-        const baseUrl = "https://raw.githubusercontent.com/koganvladislav/tokit/main/";
+  <div class="video-container">
+    <video id="player" controls></video>
+  </div>
 
-        const videoPaths = {
-            education: [...Array(10).keys()].map(i => `${baseUrl}videos/education/video${i + 1}.mp4`),
-            entertainment: [...Array(10).keys()].map(i => `${baseUrl}videos/entertainment/video${i + 1}.mp4`),
-            food: [...Array(10).keys()].map(i => `${baseUrl}videos/food/video${i + 1}.mp4`),
-            games: [...Array(19).keys()].map(i => `${baseUrl}videos/games/video${i + 1}.mp4`),
-            health: [...Array(12).keys()].map(i => `${baseUrl}videos/health/video${i + 1}.mp4`),
-            music: [...Array(20).keys()].map(i => `${baseUrl}videos/music/video${i + 1}.mp4`),
-            sport: [...Array(17).keys()].map(i => `${baseUrl}videos/sport/video${i + 1}.mp4`),
-            tech: [...Array(17).keys()].map(i => `${baseUrl}videos/tech/video${i + 1}.mp4`),
-            trip: [...Array(13).keys()].map(i => `${baseUrl}videos/trip/video${i + 1}.mp4`),
-            vehicles: [...Array(20).keys()].map(i => `${baseUrl}videos/vehicles/video${i + 1}.mp4`)
-        };
+  <div class="controls">
+    <button class="nav-btn" onclick="prevVideo()">← Назад</button>
+    <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
+  </div>
 
-        let selectedTopics = [];
-        let videos = [];
-        let currentIndex = 0;
-        let coins = 0;
-        let videoDuration = 0;
-        let isHalfWatched = false;
-        let watchInterval;
+  <div class="coin-counter">
+    💰: <span id="coins">0</span>
+  </div>
 
-        function loadCoins() {
-            fetch(`/api/coins?user_id=${userId}`)
-                .then(res => res.json())
-                .then(data => {
-                    coins = data.coins ?? 0;
-                    updateCoinDisplay();
-                });
+  <script>
+    const tg = window.Telegram.WebApp;
+    const userId = tg.initDataUnsafe?.user?.id;
+    const baseUrl = "https://raw.githubusercontent.com/koganvladislav/tokit/main/";
+
+    const videoPaths = {
+      education: [...Array(10).keys()].map(i => `${baseUrl}videos/education/video${i + 1}.mp4`),
+      entertainment: [...Array(10).keys()].map(i => `${baseUrl}videos/entertainment/video${i + 1}.mp4`),
+      food: [...Array(10).keys()].map(i => `${baseUrl}videos/food/video${i + 1}.mp4`),
+      games: [...Array(19).keys()].map(i => `${baseUrl}videos/games/video${i + 1}.mp4`),
+      health: [...Array(12).keys()].map(i => `${baseUrl}videos/health/video${i + 1}.mp4`),
+      music: [...Array(20).keys()].map(i => `${baseUrl}videos/music/video${i + 1}.mp4`),
+      sport: [...Array(17).keys()].map(i => `${baseUrl}videos/sport/video${i + 1}.mp4`),
+      tech: [...Array(17).keys()].map(i => `${baseUrl}videos/tech/video${i + 1}.mp4`),
+      trip: [...Array(13).keys()].map(i => `${baseUrl}videos/trip/video${i + 1}.mp4`),
+      vehicles: [...Array(20).keys()].map(i => `${baseUrl}videos/vehicles/video${i + 1}.mp4`)
+    };
+
+    let selectedTopics = [];
+    let videos = [];
+    let currentIndex = 0;
+    let coins = 0;
+    let videoDuration = 0;
+    let isHalfWatched = false;
+    let watchInterval;
+
+    function loadCoins() {
+      fetch(`/api/coins?user_id=${userId}`)
+        .then(res => res.json())
+        .then(data => {
+          coins = data.coins ?? 0;
+          updateCoinDisplay();
+        });
+    }
+
+    function addCoin() {
+      coins++;
+      updateCoinDisplay();
+      fetch('/api/addCoin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: userId })
+      }).catch(() => {
+        console.warn('Не удалось обновить монеты');
+      });
+    }
+
+    function updateCoinDisplay() {
+      document.getElementById('coins').textContent = coins;
+    }
+
+    function loadVideos() {
+      if (!userId) {
+        alert("Не удалось получить ваш Telegram ID.");
+        return;
+      }
+
+      loadCoins();
+
+      if (selectedTopics.length === 0) {
+        alert("Выберите хотя бы одну тему!");
+        return;
+      }
+
+      videos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
+      if (videos.length > 0) {
+        shuffleArray(videos); // перемешиваем видео
+        currentIndex = 0;
+        playVideo(videos[currentIndex]);
+      } else {
+        alert("Не найдено подходящих видео. Попробуйте другие темы.");
+      }
+    }
+
+    function nextVideo() {
+      if (videos.length === 0) return;
+      currentIndex = (currentIndex + 1) % videos.length;
+      playVideo(videos[currentIndex]);
+    }
+
+    function prevVideo() {
+      if (videos.length === 0) return;
+      currentIndex = (currentIndex - 1 + videos.length) % videos.length;
+      playVideo(videos[currentIndex]);
+    }
+
+    function playVideo(videoUrl) {
+      const player = document.getElementById('player');
+      player.src = videoUrl;
+      player.load();
+      isHalfWatched = false;
+
+      player.onloadedmetadata = () => {
+        videoDuration = player.duration;
+        startTracking(player);
+      };
+
+      player.play().catch(e => console.log("Автовоспроизведение не разрешено:", e));
+
+      player.onended = function () {
+        stopTracking();
+        coins += 1;
+        updateCoinDisplay();
+        fetch(`/api/add-coins?user_id=${userId}&amount=1`, { method: 'POST' });
+      };
+    }
+
+    function startTracking(player) {
+      stopTracking();
+      watchInterval = setInterval(() => {
+        if (!isHalfWatched && player.currentTime >= videoDuration / 2) {
+          isHalfWatched = true;
+          addCoin();
         }
+      }, 1000);
+    }
 
-        function addCoin() {
-            coins++;
-            updateCoinDisplay();
-            fetch('/api/addCoin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ user_id: userId })
-            }).catch(() => {
-                console.warn('Не удалось обновить монеты');
-            });
-        }
+    function stopTracking() {
+      clearInterval(watchInterval);
+    }
 
-        function updateCoinDisplay() {
-            document.getElementById('coins').textContent = coins;
-        }
+    function toggleTopic(button) {
+      const topic = button.value;
+      if (selectedTopics.includes(topic)) {
+        selectedTopics = selectedTopics.filter(t => t !== topic);
+        button.classList.remove("selected");
+      } else {
+        selectedTopics.push(topic);
+        button.classList.add("selected");
+      }
+    }
 
-        function loadVideos() {
-            if (!userId) {
-                alert("Не удалось получить ваш Telegram ID.");
-                return;
-            }
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
 
-            loadCoins();
-
-            if (selectedTopics.length === 0) {
-                alert("Выберите хотя бы одну тему!");
-                return;
-            }
-
-            videos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
-            if (videos.length > 0) {
-                shuffleArray(videos);
-                currentIndex = 0;
-                playVideo(videos[currentIndex]);
-            } else {
-                alert("Не найдено подходящих видео. Попробуйте другие темы.");
-            }
-        }
-
-        function nextVideo() {
-            if (videos.length === 0) return;
-            currentIndex = (currentIndex + 1) % videos.length;
-            playVideo(videos[currentIndex]);
-        }
-
-        function prevVideo() {
-            if (videos.length === 0) return;
-            currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-            playVideo(videos[currentIndex]);
-        }
-
-        function playVideo(videoUrl) {
-            const player = document.getElementById('player');
-            player.src = videoUrl;
-            player.load();
-            isHalfWatched = false;
-
-            player.onloadedmetadata = () => {
-                videoDuration = player.duration;
-                startTracking(player);
-            };
-
-            player.play().catch(e => console.log("Автовоспроизведение не разрешено:", e));
-
-            player.onended = function () {
-                stopTracking();
-                coins += 1;
-                updateCoinDisplay();
-                fetch(`/api/add-coins?user_id=${userId}&amount=1`, { method: 'POST' });
-            };
-        }
-
-        function startTracking(player) {
-            stopTracking();
-            watchInterval = setInterval(() => {
-                if (!isHalfWatched && player.currentTime >= videoDuration / 2) {
-                    isHalfWatched = true;
-                    addCoin();
-                }
-            }, 1000);
-        }
-
-        function stopTracking() {
-            clearInterval(watchInterval);
-        }
-
-        function toggleTopic(button) {
-            const topic = button.value;
-            if (selectedTopics.includes(topic)) {
-                selectedTopics = selectedTopics.filter(t => t !== topic);
-                button.classList.remove("selected");
-            } else {
-                selectedTopics.push(topic);
-                button.classList.add("selected");
-            }
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        tg.ready();
-        tg.expand();
-    </script>
+    tg.ready();
+    tg.expand();
+  </script>
 </body>
 </html>
