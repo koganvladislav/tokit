@@ -67,7 +67,7 @@
       cursor: pointer;
     }
 
-    /* Стили для прогресс-бара */
+    /* Стили для плавного прогресс-бара */
     .progress-container {
       width: 100%;
       height: 4px;
@@ -75,20 +75,25 @@
       margin-top: 8px;
       border-radius: 2px;
       overflow: hidden;
+      position: relative;
     }
 
     .progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
       height: 100%;
       width: 0;
       background-color: #000;
-      transition: width 0.1s linear;
+      transition: width 0.2s linear;
+      transform-origin: left center;
     }
 
     .progress-bar.half-watched {
       background-color: #ff5722;
     }
 
-    /* Скрываем элементы управления по умолчанию */
+    /* Скрываем элементы управления */
     #player::-webkit-media-controls {
       display: none !important;
     }
@@ -97,7 +102,6 @@
       display: none !important;
     }
     
-    /* Показываем элементы управления при наличии класса show-controls */
     .show-controls #player::-webkit-media-controls {
       display: flex !important;
     }
@@ -221,6 +225,7 @@
     let videoDuration = 0;
     let isHalfWatched = false;
     let watchInterval;
+    let animationFrameId;
 
     function loadCoins() {
       fetch(`/api/coins?user_id=${userId}`)
@@ -298,43 +303,59 @@
     }
 
     function playVideo(videoUrl) {
+      // Отменяем предыдущую анимацию
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+
       const player = document.getElementById('player');
       const progressBar = document.getElementById('progressBar');
       const container = document.querySelector('.video-container');
       
-      // Сбрасываем состояние
+      // Сбрасываем прогресс-бар без анимации
+      progressBar.style.transition = 'none';
       progressBar.style.width = '0';
       progressBar.classList.remove('half-watched');
+      // Принудительный рефлоу для применения стилей
+      void progressBar.offsetWidth;
+      // Включаем анимацию обратно
+      progressBar.style.transition = 'width 0.2s linear';
+      
       container.classList.remove('show-controls');
       isHalfWatched = false;
       
       player.src = videoUrl;
       player.load();
 
-      player.onloadedmetadata = () => {
-        videoDuration = player.duration;
-        startTracking(player);
-      };
-
-      // Обработчик клика по видео
-      player.onclick = function() {
-        container.classList.toggle('show-controls');
+      // Функция плавного обновления прогресса
+      const updateProgress = () => {
+        if (player.readyState > 0) {
+          const percent = (player.currentTime / player.duration) * 100;
+          progressBar.style.width = percent + '%';
+          
+          if (percent >= 50 && !progressBar.classList.contains('half-watched')) {
+            progressBar.classList.add('half-watched');
+          }
+        }
         
-        if (player.paused) {
-          player.play().catch(e => console.log("Не удалось запустить видео:", e));
-        } else {
-          player.pause();
+        if (!player.ended && !player.paused) {
+          animationFrameId = requestAnimationFrame(updateProgress);
         }
       };
 
-      // Обновление прогресс-бара
-      player.ontimeupdate = function() {
-        const percent = (player.currentTime / player.duration) * 100;
-        progressBar.style.width = percent + '%';
-        
-        // Меняем цвет после 50% просмотра
-        if (percent >= 50 && !progressBar.classList.contains('half-watched')) {
-          progressBar.classList.add('half-watched');
+      player.onloadedmetadata = () => {
+        videoDuration = player.duration;
+        startTracking(player);
+        animationFrameId = requestAnimationFrame(updateProgress);
+      };
+
+      player.onclick = function() {
+        container.classList.toggle('show-controls');
+        if (player.paused) {
+          player.play().catch(e => console.log("Не удалось запустить видео:", e));
+          animationFrameId = requestAnimationFrame(updateProgress);
+        } else {
+          player.pause();
         }
       };
 
@@ -352,7 +373,7 @@
     function startTracking(player) {
       stopTracking();
       watchInterval = setInterval(() => {
-        if (!isHalfWatched && player.currentTime >= videoDuration / 2) {
+        if (!isHalfWatched && player.currentTime >= player.duration / 2) {
           isHalfWatched = true;
           addCoin();
         }
@@ -361,6 +382,9 @@
 
     function stopTracking() {
       clearInterval(watchInterval);
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
     }
 
     function toggleTopic(button) {
