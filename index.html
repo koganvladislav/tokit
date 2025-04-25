@@ -1,3 +1,4 @@
+Я хочу чтобы показывались все видео по очереди при нажатии кнопки вперед:
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -137,66 +138,66 @@
 
         // Массивы с путями к видеофайлам по категориям
         const videoPaths = {
-            спорт: [
-                "videos/sport/video1.mp4", "videos/sport/video2.mp4", "videos/sport/video3.mp4", "videos/sport/video4.mp4",
-                "videos/sport/video5.mp4", "videos/sport/video6.mp4", "videos/sport/video7.mp4", "videos/sport/video8.mp4",
-                "videos/sport/video9.mp4", "videos/sport/video10.mp4", "videos/sport/video11.mp4", "videos/sport/video12.mp4",
-                "videos/sport/video13.mp4", "videos/sport/video14.mp4", "videos/sport/video15.mp4", "videos/sport/video16.mp4",
-                "videos/sport/video17.mp4"
+            education: [
+                "videos/education/video1.mp4", "videos/education/video2.mp4", "videos/education/video3.mp4", "videos/education/video4.mp4",
+                "videos/education/video5.mp4", "videos/education/video6.mp4", "videos/education/video7.mp4", "videos/education/video8.mp4",
+                "videos/education/video9.mp4", "videos/education/video10.mp4"
             ],
-            игры: [
+            entertainment: [
+                "videos/entertainment/video1.mp4", "videos/entertainment/video2.mp4", "videos/entertainment/video3.mp4", "videos/entertainment/video4.mp4",
+                "videos/entertainment/video5.mp4", "videos/entertainment/video6.mp4", "videos/entertainment/video7.mp4", "videos/entertainment/video8.mp4",
+                "videos/entertainment/video9.mp4", "videos/entertainment/video10.mp4"
+            ],
+            food: [
+                "videos/food/video1.mp4", "videos/food/video2.mp4", "videos/food/video3.mp4", "videos/food/video4.mp4",
+                "videos/food/video5.mp4", "videos/food/video6.mp4", "videos/food/video7.mp4", "videos/food/video8.mp4",
+                "videos/food/video9.mp4", "videos/food/video10.mp4"
+            ],
+            games: [
                 "videos/games/video1.mp4", "videos/games/video2.mp4", "videos/games/video3.mp4", "videos/games/video4.mp4",
                 "videos/games/video5.mp4", "videos/games/video6.mp4", "videos/games/video7.mp4", "videos/games/video8.mp4",
                 "videos/games/video9.mp4", "videos/games/video10.mp4", "videos/games/video11.mp4", "videos/games/video12.mp4",
                 "videos/games/video13.mp4", "videos/games/video14.mp4", "videos/games/video15.mp4", "videos/games/video16.mp4",
                 "videos/games/video17.mp4", "videos/games/video18.mp4", "videos/games/video19.mp4"
             ],
-            музыка: [
+            health: [
+                "videos/health/video1.mp4", "videos/health/video2.mp4", "videos/health/video3.mp4", "videos/health/video4.mp4",
+                "videos/health/video5.mp4", "videos/health/video6.mp4", "videos/health/video7.mp4", "videos/health/video8.mp4",
+                "videos/health/video9.mp4", "videos/health/video10.mp4", "videos/health/video11.mp4", "videos/health/video12.mp4"
+            ],
+            music: [
                 "videos/music/video1.mp4", "videos/music/video2.mp4", "videos/music/video3.mp4", "videos/music/video4.mp4",
                 "videos/music/video5.mp4", "videos/music/video6.mp4", "videos/music/video7.mp4", "videos/music/video8.mp4",
                 "videos/music/video9.mp4", "videos/music/video10.mp4", "videos/music/video11.mp4", "videos/music/video12.mp4",
                 "videos/music/video13.mp4", "videos/music/video14.mp4", "videos/music/video15.mp4", "videos/music/video16.mp4",
                 "videos/music/video17.mp4", "videos/music/video18.mp4", "videos/music/video19.mp4", "videos/music/video20.mp4"
             ],
-            развлечения: [
-                "videos/entertainment/video1.mp4", "videos/entertainment/video2.mp4", "videos/entertainment/video3.mp4", "videos/entertainment/video4.mp4",
-                "videos/entertainment/video5.mp4", "videos/entertainment/video6.mp4", "videos/entertainment/video7.mp4", "videos/entertainment/video8.mp4",
-                "videos/entertainment/video9.mp4", "videos/entertainment/video10.mp4"
+            sport: [
+                "videos/sport/video1.mp4", "videos/sport/video2.mp4", "videos/sport/video3.mp4", "videos/sport/video4.mp4",
+                "videos/sport/video5.mp4", "videos/sport/video6.mp4", "videos/sport/video7.mp4", "videos/sport/video8.mp4",
+                "videos/sport/video9.mp4", "videos/sport/video10.mp4", "videos/sport/video11.mp4", "videos/sport/video12.mp4",
+                "videos/sport/video13.mp4", "videos/sport/video14.mp4", "videos/sport/video15.mp4", "videos/sport/video16.mp4",
+                "videos/sport/video17.mp4"
             ],
-            образование: [
-                "videos/education/video1.mp4", "videos/education/video2.mp4", "videos/education/video3.mp4", "videos/education/video4.mp4",
-                "videos/education/video5.mp4", "videos/education/video6.mp4", "videos/education/video7.mp4", "videos/education/video8.mp4",
-                "videos/education/video9.mp4", "videos/education/video10.mp4"
-            ],
-            технологии: [
+            tech: [
                 "videos/tech/video1.mp4", "videos/tech/video2.mp4", "videos/tech/video3.mp4", "videos/tech/video4.mp4",
                 "videos/tech/video5.mp4", "videos/tech/video6.mp4", "videos/tech/video7.mp4", "videos/tech/video8.mp4",
                 "videos/tech/video9.mp4", "videos/tech/video10.mp4", "videos/tech/video11.mp4", "videos/tech/video12.mp4",
                 "videos/tech/video13.mp4", "videos/tech/video14.mp4", "videos/tech/video15.mp4", "videos/tech/video16.mp4",
                 "videos/tech/video17.mp4"
             ],
-            авто: [
-                "videos/vehicles/video1.mp4", "videos/vehicles/video2.mp4", "videos/vehicles/video3.mp4", "videos/vehicles/video4.mp4",
-                "videos/vehicles/video5.mp4", "videos/vehicles/video6.mp4", "videos/vehicles/video7.mp4", "videos/vehicles/video8.mp4",
-                "videos/vehicles/video9.mp4", "videos/vehicles/video10.mp4", "videos/vehicles/video11.mp4", "videos/vehicles/video12.mp4",
-                "videos/vehicles/video13.mp4", "videos/vehicles/video14.mp4", "videos/vehicles/video15.mp4", "videos/vehicles/video16.mp4",
-                "videos/vehicles/video17.mp4", "videos/vehicles/video18.mp4", "videos/vehicles/video19.mp4", "videos/vehicles/video20.mp4"
-            ],
-            путешествия: [
+            trip: [
                 "videos/trip/video1.mp4", "videos/trip/video2.mp4", "videos/trip/video3.mp4", "videos/trip/video4.mp4",
                 "videos/trip/video5.mp4", "videos/trip/video6.mp4", "videos/trip/video7.mp4", "videos/trip/video8.mp4",
                 "videos/trip/video9.mp4", "videos/trip/video10.mp4", "videos/trip/video11.mp4", "videos/trip/video12.mp4",
                 "videos/trip/video13.mp4"
             ],
-            еда: [
-                "videos/food/video1.mp4", "videos/food/video2.mp4", "videos/food/video3.mp4", "videos/food/video4.mp4",
-                "videos/food/video5.mp4", "videos/food/video6.mp4", "videos/food/video7.mp4", "videos/food/video8.mp4",
-                "videos/food/video9.mp4", "videos/food/video10.mp4"
-            ],
-            здоровье: [
-                "videos/health/video1.mp4", "videos/health/video2.mp4", "videos/health/video3.mp4", "videos/health/video4.mp4",
-                "videos/health/video5.mp4", "videos/health/video6.mp4", "videos/health/video7.mp4", "videos/health/video8.mp4",
-                "videos/health/video9.mp4", "videos/health/video10.mp4", "videos/health/video11.mp4", "videos/health/video12.mp4"
+            vehicles: [
+                "videos/vehicles/video1.mp4", "videos/vehicles/video2.mp4", "videos/vehicles/video3.mp4", "videos/vehicles/video4.mp4",
+                "videos/vehicles/video5.mp4", "videos/vehicles/video6.mp4", "videos/vehicles/video7.mp4", "videos/vehicles/video8.mp4",
+                "videos/vehicles/video9.mp4", "videos/vehicles/video10.mp4", "videos/vehicles/video11.mp4", "videos/vehicles/video12.mp4",
+                "videos/vehicles/video13.mp4", "videos/vehicles/video14.mp4", "videos/vehicles/video15.mp4", "videos/vehicles/video16.mp4",
+                "videos/vehicles/video17.mp4", "videos/vehicles/video18.mp4", "videos/vehicles/video19.mp4", "videos/vehicles/video20.mp4"
             ]
         };
         
@@ -207,7 +208,7 @@
 
         // Загружаем монеты для пользователя
         function loadCoins() {
-            fetch(`/api/coins?user_id=${userId}`)
+            fetch(/api/coins?user_id=${userId})
                 .then(res => res.json())
                 .then(data => {
                     coins = data.coins ?? 0;
@@ -220,45 +221,21 @@
         }
 
         function loadVideos() {
-            // Очищаем текущий список видео
-            videos = [];
-            
-            // Собираем все видео из выбранных тем
-            selectedTopics.forEach(topic => {
-                if (videoPaths[topic]) {
-                    videos = videos.concat(videoPaths[topic]);
-                }
-            });
-            
-            // Если видео не выбраны, можно добавить все или показать сообщение
-            if (videos.length === 0) {
-                alert("Пожалуйста, выберите хотя бы одну тему");
-                return;
-            }
-            
-            // Перемешиваем видео, если нужно
-            shuffleArray(videos);
-            
-            // Начинаем воспроизведение с первого видео
-            currentIndex = 0;
-            playVideo(videos[currentIndex]);
-        }
+    const player = document.getElementById('player');
+    const videoPath = "videos/games/video1.mp4";
+    player.src = videoPath;
+    player.play();
+}
 
         // Функция для переключения видео
         function nextVideo() {
-            if (videos.length === 0) {
-                alert("Сначала загрузите видео, выбрав темы и нажав 'Показать видео'");
-                return;
-            }
+            if (videos.length === 0) return;
             currentIndex = (currentIndex + 1) % videos.length;
             playVideo(videos[currentIndex]);
         }
 
         function prevVideo() {
-            if (videos.length === 0) {
-                alert("Сначала загрузите видео, выбрав темы и нажав 'Показать видео'");
-                return;
-            }
+            if (videos.length === 0) return;
             currentIndex = (currentIndex - 1 + videos.length) % videos.length;
             playVideo(videos[currentIndex]);
         }
@@ -266,8 +243,7 @@
         function playVideo(videoPath) {
             const player = document.getElementById('player');
             player.src = videoPath;
-            player.load(); // Загружаем новое видео
-            player.play().catch(e => console.error("Ошибка воспроизведения:", e));
+            player.play();
         }
 
         function toggleTopic(button) {
