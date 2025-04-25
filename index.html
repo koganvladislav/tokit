@@ -63,6 +63,25 @@
       border-radius: 15px;
       overflow: hidden;
       background-color: #000;
+      cursor: pointer;
+    }
+
+    /* Скрываем элементы управления по умолчанию */
+    #player::-webkit-media-controls {
+      display: none !important;
+    }
+    
+    #player::-webkit-media-controls-enclosure {
+      display: none !important;
+    }
+    
+    /* Показываем элементы управления при наличии класса show-controls */
+    .show-controls #player::-webkit-media-controls {
+      display: flex !important;
+    }
+    
+    .show-controls #player::-webkit-media-controls-enclosure {
+      display: flex !important;
     }
 
     .controls {
@@ -140,7 +159,7 @@
   <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
   <div class="video-container">
-    <video id="player" controls playsinline></video>
+    <video id="player" playsinline></video>
   </div>
 
   <div class="controls">
@@ -223,7 +242,7 @@
         try {
           const response = await fetch(url, { method: 'HEAD' });
           const size = parseInt(response.headers.get("Content-Length"), 10);
-          if (!isNaN(size) && size > 10000) { // 10 KB минимум
+          if (!isNaN(size) && size > 10000) {
             filtered.push(url);
           }
         } catch (e) {
@@ -255,6 +274,11 @@
 
     function playVideo(videoUrl) {
       const player = document.getElementById('player');
+      const container = document.querySelector('.video-container');
+      
+      // Скрываем элементы управления
+      container.classList.remove('show-controls');
+      
       player.src = videoUrl;
       player.load();
       isHalfWatched = false;
@@ -264,6 +288,19 @@
         startTracking(player);
       };
 
+      // Обработчик клика по видео
+      player.onclick = function() {
+        container.classList.toggle('show-controls');
+        
+        // Переключаем воспроизведение при клике
+        if (player.paused) {
+          player.play().catch(e => console.log("Не удалось запустить видео:", e));
+        } else {
+          player.pause();
+        }
+      };
+
+      // Автовоспроизведение
       player.play().catch(e => console.log("Автовоспроизведение не разрешено:", e));
 
       player.onended = function () {
@@ -271,6 +308,7 @@
         coins += 1;
         updateCoinDisplay();
         fetch(`/api/add-coins?user_id=${userId}&amount=1`, { method: 'POST' });
+        setTimeout(nextVideo, 1000);
       };
     }
 
