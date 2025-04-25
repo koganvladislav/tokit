@@ -17,6 +17,7 @@
 
     h2 {
       color: #ffffff;
+      margin-bottom: 15px;
     }
 
     .topics {
@@ -51,31 +52,35 @@
       display: flex;
       justify-content: center;
       margin: 20px auto;
+      max-width: 100%;
     }
 
     #player {
-      width: 320px;
-      height: 560px;
+      width: 100%;
+      max-width: 320px;
+      height: auto;
+      aspect-ratio: 9/16;
       border-radius: 15px;
       overflow: hidden;
       background-color: #000;
     }
 
     .controls {
-      margin-top: 10px;
+      margin-top: 15px;
       display: flex;
       justify-content: center;
-      gap: 10px;
+      gap: 15px;
     }
 
     .nav-btn {
-      padding: 10px 15px;
+      padding: 10px 20px;
       border: none;
       border-radius: 20px;
       cursor: pointer;
       font-size: 16px;
       background-color: #333;
       color: #fff;
+      transition: background-color 0.2s;
     }
 
     .nav-btn:hover {
@@ -83,7 +88,7 @@
     }
 
     .coin-counter {
-      font-size: 20px;
+      font-size: 18px;
       margin-top: 20px;
       color: #ffeb3b;
     }
@@ -96,11 +101,24 @@
       border-radius: 25px;
       font-size: 16px;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin: 15px 0;
+      transition: background-color 0.2s;
     }
 
     .load-btn:hover {
       background-color: #e64a19;
+    }
+
+    @media (max-width: 480px) {
+      .topic {
+        padding: 8px 12px;
+        font-size: 14px;
+      }
+      
+      .nav-btn, .load-btn {
+        padding: 10px 18px;
+        font-size: 15px;
+      }
     }
   </style>
 </head>
@@ -122,7 +140,7 @@
   <button class="load-btn" onclick="loadVideos()">Показать видео</button>
 
   <div class="video-container">
-    <video id="player" controls></video>
+    <video id="player" controls playsinline></video>
   </div>
 
   <div class="controls">
@@ -186,42 +204,42 @@
     }
 
     async function loadVideos() {
-  if (!userId) {
-    alert("Не удалось получить ваш Telegram ID.");
-    return;
-  }
-
-  loadCoins();
-
-  if (selectedTopics.length === 0) {
-    alert("Выберите хотя бы одну тему!");
-    return;
-  }
-
-  const allVideos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
-  const filtered = [];
-
-  for (const url of allVideos) {
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const size = parseInt(response.headers.get("Content-Length"), 10);
-      if (!isNaN(size) && size > 10000) { // 10 KB минимум
-        filtered.push(url);
+      if (!userId) {
+        alert("Не удалось получить ваш Telegram ID.");
+        return;
       }
-    } catch (e) {
-      console.warn(`Ошибка при проверке видео: ${url}`, e);
-    }
-  }
 
-  if (filtered.length > 0) {
-    videos = filtered;
-    shuffleArray(videos);
-    currentIndex = 0;
-    playVideo(videos[currentIndex]);
-  } else {
-    alert("Не найдено подходящих видео. Попробуйте другие темы.");
-  }
-}
+      loadCoins();
+
+      if (selectedTopics.length === 0) {
+        alert("Выберите хотя бы одну тему!");
+        return;
+      }
+
+      const allVideos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
+      const filtered = [];
+
+      for (const url of allVideos) {
+        try {
+          const response = await fetch(url, { method: 'HEAD' });
+          const size = parseInt(response.headers.get("Content-Length"), 10);
+          if (!isNaN(size) && size > 10000) { // 10 KB минимум
+            filtered.push(url);
+          }
+        } catch (e) {
+          console.warn(`Ошибка при проверке видео: ${url}`, e);
+        }
+      }
+
+      if (filtered.length > 0) {
+        videos = filtered;
+        shuffleArray(videos);
+        currentIndex = 0;
+        playVideo(videos[currentIndex]);
+      } else {
+        alert("Не найдено подходящих видео. Попробуйте другие темы.");
+      }
+    }
 
     function nextVideo() {
       if (videos.length === 0) return;
