@@ -185,28 +185,43 @@
       document.getElementById('coins').textContent = coins;
     }
 
-    function loadVideos() {
-      if (!userId) {
-        alert("Не удалось получить ваш Telegram ID.");
-        return;
-      }
+    async function loadVideos() {
+  if (!userId) {
+    alert("Не удалось получить ваш Telegram ID.");
+    return;
+  }
 
-      loadCoins();
+  loadCoins();
 
-      if (selectedTopics.length === 0) {
-        alert("Выберите хотя бы одну тему!");
-        return;
-      }
+  if (selectedTopics.length === 0) {
+    alert("Выберите хотя бы одну тему!");
+    return;
+  }
 
-      videos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
-      if (videos.length > 0) {
-        shuffleArray(videos); // перемешиваем видео
-        currentIndex = 0;
-        playVideo(videos[currentIndex]);
-      } else {
-        alert("Не найдено подходящих видео. Попробуйте другие темы.");
+  const allVideos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
+  const filtered = [];
+
+  for (const url of allVideos) {
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const size = parseInt(response.headers.get("Content-Length"), 10);
+      if (!isNaN(size) && size > 10000) { // 10 KB минимум
+        filtered.push(url);
       }
+    } catch (e) {
+      console.warn(`Ошибка при проверке видео: ${url}`, e);
     }
+  }
+
+  if (filtered.length > 0) {
+    videos = filtered;
+    shuffleArray(videos);
+    currentIndex = 0;
+    playVideo(videos[currentIndex]);
+  } else {
+    alert("Не найдено подходящих видео. Попробуйте другие темы.");
+  }
+}
 
     function nextVideo() {
       if (videos.length === 0) return;
