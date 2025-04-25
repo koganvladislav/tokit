@@ -366,7 +366,6 @@
         coins += 1;
         updateCoinDisplay();
         fetch(`/api/add-coins?user_id=${userId}&amount=1`, { method: 'POST' });
-        setTimeout(nextVideo, 1000);
       };
     }
 
