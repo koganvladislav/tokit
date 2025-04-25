@@ -1,286 +1,97 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tokit1</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Game Video Player</title>
     <style>
-    body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 0;
-        padding: 20px;
-        background-color: #121212;
-        color: #ffffff;
-    }
-
-    h2 {
-        color: #ffffff;
-    }
-
-    .topics {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin: 20px 0;
-    }
-
-    .topic {
-        padding: 10px 15px;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 16px;
-        background-color: #444;
-        color: #fff;
-        transition: background-color 0.3s, transform 0.2s;
-    }
-
-    .topic:hover {
-        transform: scale(1.05);
-    }
-
-    .selected {
-        background-color: #ff5722;
-        color: white;
-    }
-
-    .video-container {
-        display: flex;
-        justify-content: center;
-        margin: 20px auto;
-    }
-
-    #player {
-        width: 320px;
-        height: 560px;
-        border-radius: 15px;
-        overflow: hidden;
-        background-color: #000;
-    }
-
-    .controls {
-        margin-top: 10px;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
-
-    .nav-btn {
-        padding: 10px 15px;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        font-size: 16px;
-        background-color: #333;
-        color: #fff;
-    }
-
-    .nav-btn:hover {
-        background-color: #555;
-    }
-
-    .coin-counter {
-        font-size: 20px;
-        margin-top: 20px;
-        color: #ffeb3b;
-    }
-
-    .load-btn {
-        padding: 12px 24px;
-        background-color: #ff5722;
-        color: white;
-        border: none;
-        border-radius: 25px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-bottom: 20px;
-    }
-
-    .load-btn:hover {
-        background-color: #e64a19;
-    }
-</style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #000;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        video {
+            width: 100%;
+            display: block;
+        }
+        .note {
+            margin-top: 20px;
+            color: #aaa;
+            font-size: 14px;
+            text-align: center;
+            max-width: 800px;
+            line-height: 1.5;
+        }
+        .github-link {
+            margin-top: 30px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            border: 1px solid #4CAF50;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        .github-link:hover {
+            background-color: #4CAF50;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <h2>Выберите интересующие вас темы:</h2>
-    <div class="topics">
-        <button class="topic" onclick="toggleTopic(this)" value="спорт">🏋️ Спорт</button>
-        <button class="topic" onclick="toggleTopic(this)" value="игры">🎮 Игры</button>
-        <button class="topic" onclick="toggleTopic(this)" value="музыка">🎵 Музыка</button>
-        <button class="topic" onclick="toggleTopic(this)" value="развлечения">🎭 Развлечения</button>
-        <button class="topic" onclick="toggleTopic(this)" value="образование">📚 Образование</button>
-        <button class="topic" onclick="toggleTopic(this)" value="технологии">💻 Технологии</button>
-        <button class="topic" onclick="toggleTopic(this)" value="авто">🚗 Авто</button>
-        <button class="topic" onclick="toggleTopic(this)" value="путешествия">✈️ Путешествия</button>
-        <button class="topic" onclick="toggleTopic(this)" value="еда">🍔 Еда</button>
-        <button class="topic" onclick="toggleTopic(this)" value="здоровье">❤️ Здоровье</button>
-    </div>
-    <button class="load-btn" onclick="loadVideos()">Показать видео</button>
-
+    <h1>Game Video Player</h1>
     <div class="video-container">
-        <video id="player" controls></video>
+        <video controls autoplay muted>
+            <source src="https://raw.githubusercontent.com/koganvladislav/tokit2/main/videos/games/video1.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
-    <div class="controls">
-        <button class="nav-btn" onclick="prevVideo()">← Назад</button>
-        <button class="nav-btn" onclick="nextVideo()">Вперёд →</button>
-    </div>
-    <div class="coin-counter">
-      💰: <span id="coins">0</span>
-    </div>
+    <p class="note">
+        Если видео не загружается, убедитесь что файл доступен публично на GitHub.<br>
+        Обратите внимание, что GitHub не предназначен для хранения больших видеофайлов.
+    </p>
+    <a href="https://github.com/koganvladislav/tokit2/blob/main/videos/games/video1.mp4" class="github-link" target="_blank">View on GitHub</a>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        const userId = tg.initDataUnsafe?.user?.id; // Получаем Telegram ID
-
-        // Массивы с путями к видеофайлам по категориям
-        const videoPaths = {
-            education: [
-                "videos/education/video1.mp4", "videos/education/video2.mp4", "videos/education/video3.mp4", "videos/education/video4.mp4",
-                "videos/education/video5.mp4", "videos/education/video6.mp4", "videos/education/video7.mp4", "videos/education/video8.mp4",
-                "videos/education/video9.mp4", "videos/education/video10.mp4"
-            ],
-            entertainment: [
-                "videos/entertainment/video1.mp4", "videos/entertainment/video2.mp4", "videos/entertainment/video3.mp4", "videos/entertainment/video4.mp4",
-                "videos/entertainment/video5.mp4", "videos/entertainment/video6.mp4", "videos/entertainment/video7.mp4", "videos/entertainment/video8.mp4",
-                "videos/entertainment/video9.mp4", "videos/entertainment/video10.mp4"
-            ],
-            food: [
-                "videos/food/video1.mp4", "videos/food/video2.mp4", "videos/food/video3.mp4", "videos/food/video4.mp4",
-                "videos/food/video5.mp4", "videos/food/video6.mp4", "videos/food/video7.mp4", "videos/food/video8.mp4",
-                "videos/food/video9.mp4", "videos/food/video10.mp4"
-            ],
-            games: [
-                "videos/games/video1.mp4", "videos/games/video2.mp4", "videos/games/video3.mp4", "videos/games/video4.mp4",
-                "videos/games/video5.mp4", "videos/games/video6.mp4", "videos/games/video7.mp4", "videos/games/video8.mp4",
-                "videos/games/video9.mp4", "videos/games/video10.mp4", "videos/games/video11.mp4", "videos/games/video12.mp4",
-                "videos/games/video13.mp4", "videos/games/video14.mp4", "videos/games/video15.mp4", "videos/games/video16.mp4",
-                "videos/games/video17.mp4", "videos/games/video18.mp4", "videos/games/video19.mp4"
-            ],
-            health: [
-                "videos/health/video1.mp4", "videos/health/video2.mp4", "videos/health/video3.mp4", "videos/health/video4.mp4",
-                "videos/health/video5.mp4", "videos/health/video6.mp4", "videos/health/video7.mp4", "videos/health/video8.mp4",
-                "videos/health/video9.mp4", "videos/health/video10.mp4", "videos/health/video11.mp4", "videos/health/video12.mp4"
-            ],
-            music: [
-                "videos/music/video1.mp4", "videos/music/video2.mp4", "videos/music/video3.mp4", "videos/music/video4.mp4",
-                "videos/music/video5.mp4", "videos/music/video6.mp4", "videos/music/video7.mp4", "videos/music/video8.mp4",
-                "videos/music/video9.mp4", "videos/music/video10.mp4", "videos/music/video11.mp4", "videos/music/video12.mp4",
-                "videos/music/video13.mp4", "videos/music/video14.mp4", "videos/music/video15.mp4", "videos/music/video16.mp4",
-                "videos/music/video17.mp4", "videos/music/video18.mp4", "videos/music/video19.mp4", "videos/music/video20.mp4"
-            ],
-            sport: [
-                "videos/sport/video1.mp4", "videos/sport/video2.mp4", "videos/sport/video3.mp4", "videos/sport/video4.mp4",
-                "videos/sport/video5.mp4", "videos/sport/video6.mp4", "videos/sport/video7.mp4", "videos/sport/video8.mp4",
-                "videos/sport/video9.mp4", "videos/sport/video10.mp4", "videos/sport/video11.mp4", "videos/sport/video12.mp4",
-                "videos/sport/video13.mp4", "videos/sport/video14.mp4", "videos/sport/video15.mp4", "videos/sport/video16.mp4",
-                "videos/sport/video17.mp4"
-            ],
-            tech: [
-                "videos/tech/video1.mp4", "videos/tech/video2.mp4", "videos/tech/video3.mp4", "videos/tech/video4.mp4",
-                "videos/tech/video5.mp4", "videos/tech/video6.mp4", "videos/tech/video7.mp4", "videos/tech/video8.mp4",
-                "videos/tech/video9.mp4", "videos/tech/video10.mp4", "videos/tech/video11.mp4", "videos/tech/video12.mp4",
-                "videos/tech/video13.mp4", "videos/tech/video14.mp4", "videos/tech/video15.mp4", "videos/tech/video16.mp4",
-                "videos/tech/video17.mp4"
-            ],
-            trip: [
-                "videos/trip/video1.mp4", "videos/trip/video2.mp4", "videos/trip/video3.mp4", "videos/trip/video4.mp4",
-                "videos/trip/video5.mp4", "videos/trip/video6.mp4", "videos/trip/video7.mp4", "videos/trip/video8.mp4",
-                "videos/trip/video9.mp4", "videos/trip/video10.mp4", "videos/trip/video11.mp4", "videos/trip/video12.mp4",
-                "videos/trip/video13.mp4"
-            ],
-            vehicles: [
-                "videos/vehicles/video1.mp4", "videos/vehicles/video2.mp4", "videos/vehicles/video3.mp4", "videos/vehicles/video4.mp4",
-                "videos/vehicles/video5.mp4", "videos/vehicles/video6.mp4", "videos/vehicles/video7.mp4", "videos/vehicles/video8.mp4",
-                "videos/vehicles/video9.mp4", "videos/vehicles/video10.mp4", "videos/vehicles/video11.mp4", "videos/vehicles/video12.mp4",
-                "videos/vehicles/video13.mp4", "videos/vehicles/video14.mp4", "videos/vehicles/video15.mp4", "videos/vehicles/video16.mp4",
-                "videos/vehicles/video17.mp4", "videos/vehicles/video18.mp4", "videos/vehicles/video19.mp4", "videos/vehicles/video20.mp4"
-            ]
-        };
-        
-        let selectedTopics = [];
-        let videos = [];
-        let currentIndex = 0;
-        let coins = 0;
-
-        // Загружаем монеты для пользователя
-        function loadCoins() {
-            fetch(`/api/coins?user_id=${userId}`)
-                .then(res => res.json())
-                .then(data => {
-                    coins = data.coins ?? 0;
-                    updateCoinDisplay();
-                });
-        }
-
-        function updateCoinDisplay() {
-            document.getElementById('coins').textContent = coins;
-        }
-
-        function loadVideos() {
-            if (!userId) {
-                alert("Не удалось получить ваш Telegram ID.");
-                return;
-            }
-
-            loadCoins();  // Загружаем монеты пользователя
-
-            if (selectedTopics.length === 0) {
-                alert("Выберите хотя бы одну тему!");
-                return;
-            }
-
-            // Составляем список видео по выбранным темам
-            videos = selectedTopics.flatMap(topic => videoPaths[topic] || []);
-            if (videos.length > 0) {
-                shuffleArray(videos);
-                playVideo(videos[0]);
-            } else {
-                alert("Не найдено подходящих видео. Попробуйте другие темы.");
-            }
-        }
-
-        // Функция для переключения видео
-        function nextVideo() {
-            if (videos.length === 0) return;
-            currentIndex = (currentIndex + 1) % videos.length;
-            playVideo(videos[currentIndex]);
-        }
-
-        function prevVideo() {
-            if (videos.length === 0) return;
-            currentIndex = (currentIndex - 1 + videos.length) % videos.length;
-            playVideo(videos[currentIndex]);
-        }
-
-        function playVideo(videoPath) {
-            const player = document.getElementById('player');
-            player.src = videoPath;
-            player.play();
-        }
-
-        function toggleTopic(button) {
-            const topic = button.value;
-            if (selectedTopics.includes(topic)) {
-                selectedTopics = selectedTopics.filter(t => t !== topic);
-                button.classList.remove("selected");
-            } else {
-                selectedTopics.push(topic);
-                button.classList.add("selected");
-            }
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        // Инициализация Telegram Web App
-        tg.ready();
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.querySelector('video');
+            
+            // Попробуем использовать более надежный URL
+            const githubRawUrl = 'https://raw.githubusercontent.com/koganvladislav/tokit/main/videos/games/video1.mp4';
+            const githubBlobUrl = 'https://github.com/koganvladislav/tokit/blob/main/videos/games/video1.mp4?raw=true';
+            
+            video.src = githubRawUrl;
+            
+            video.addEventListener('error', () => {
+                console.log('Пробуем альтернативный URL...');
+                video.src = githubBlobUrl;
+            });
+            
+            video.addEventListener('canplay', () => {
+                console.log('Видео готово к воспроизведению');
+                video.muted = false;
+            });
+        });
     </script>
 </body>
 </html>
