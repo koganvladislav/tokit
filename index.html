@@ -50,20 +50,42 @@
 
     .video-container {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       margin: 20px auto;
-      max-width: 100%;
+      max-width: 320px;
+      width: 100%;
     }
 
     #player {
       width: 100%;
-      max-width: 320px;
       height: auto;
       aspect-ratio: 9/16;
       border-radius: 15px;
       overflow: hidden;
       background-color: #000;
       cursor: pointer;
+    }
+
+    /* Стили для прогресс-бара */
+    .progress-container {
+      width: 100%;
+      height: 4px;
+      background-color: #333;
+      margin-top: 8px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      background-color: #000;
+      transition: width 0.1s linear;
+    }
+
+    .progress-bar.half-watched {
+      background-color: #ff5722;
     }
 
     /* Скрываем элементы управления по умолчанию */
@@ -160,6 +182,9 @@
 
   <div class="video-container">
     <video id="player" playsinline></video>
+    <div class="progress-container">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
   </div>
 
   <div class="controls">
@@ -274,14 +299,17 @@
 
     function playVideo(videoUrl) {
       const player = document.getElementById('player');
+      const progressBar = document.getElementById('progressBar');
       const container = document.querySelector('.video-container');
       
-      // Скрываем элементы управления
+      // Сбрасываем состояние
+      progressBar.style.width = '0';
+      progressBar.classList.remove('half-watched');
       container.classList.remove('show-controls');
+      isHalfWatched = false;
       
       player.src = videoUrl;
       player.load();
-      isHalfWatched = false;
 
       player.onloadedmetadata = () => {
         videoDuration = player.duration;
@@ -292,7 +320,6 @@
       player.onclick = function() {
         container.classList.toggle('show-controls');
         
-        // Переключаем воспроизведение при клике
         if (player.paused) {
           player.play().catch(e => console.log("Не удалось запустить видео:", e));
         } else {
@@ -300,10 +327,20 @@
         }
       };
 
-      // Автовоспроизведение
+      // Обновление прогресс-бара
+      player.ontimeupdate = function() {
+        const percent = (player.currentTime / player.duration) * 100;
+        progressBar.style.width = percent + '%';
+        
+        // Меняем цвет после 50% просмотра
+        if (percent >= 50 && !progressBar.classList.contains('half-watched')) {
+          progressBar.classList.add('half-watched');
+        }
+      };
+
       player.play().catch(e => console.log("Автовоспроизведение не разрешено:", e));
 
-      player.onended = function () {
+      player.onended = function() {
         stopTracking();
         coins += 1;
         updateCoinDisplay();
