@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
     if (rows.length === 0) {
       // если нет юзера — создать
       await pool.query(
-        'INSERT INTO users (user_id, coins, created_at) VALUES ($1, $2, NOW())',
+        'INSERT INTO users (user_id, coins, created_at, updated_at) VALUES ($1, $2, NOW(), NOW())',
         [userId, 0]
       );
       return res.status(200).json({ coins: 0 });
