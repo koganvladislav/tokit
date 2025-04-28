@@ -14,10 +14,12 @@ module.exports = async (req, res) => {
     if (!user_id) return res.status(400).json({ error: 'Missing user_id' });
 
     await pool.query(`
-      INSERT INTO users (user_id, coins, created_at)
-      VALUES ($1, 1, NOW())
-      ON CONFLICT (user_id) DO UPDATE SET coins = users.coins + 1
-    `, [user_id]);
+  INSERT INTO users (user_id, coins, created_at, updated_at)
+  VALUES ($1, 1, NOW(), NOW())
+  ON CONFLICT (user_id) DO UPDATE SET 
+    coins = users.coins + 1,
+    updated_at = CURRENT_TIMESTAMP
+`, [user_id]);
 
     res.status(200).json({ message: 'Coin added' });
   } catch (err) {
