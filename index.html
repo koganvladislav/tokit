@@ -154,6 +154,59 @@
       background-color: #e64a19;
     }
 
+    /* Стили для реферальной системы */
+    .referral-section {
+      margin-top: 30px;
+      padding: 15px;
+      background-color: #1e1e1e;
+      border-radius: 10px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .referral-section h3 {
+      color: #ffeb3b;
+      margin-top: 0;
+    }
+
+    #referralLink {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #333;
+      color: white;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .copy-btn {
+      padding: 8px 15px;
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .referral-stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 15px;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffeb3b;
+    }
+
     @media (max-width: 480px) {
       .topic {
         padding: 8px 12px;
@@ -163,6 +216,10 @@
       .nav-btn, .load-btn {
         padding: 10px 18px;
         font-size: 15px;
+      }
+      
+      .referral-section {
+        padding: 10px;
       }
     }
   </style>
@@ -200,22 +257,42 @@
     💰: <span id="coins">0</span>
   </div>
 
+  <!-- Реферальная секция -->
+  <div class="referral-section">
+    <h3>Реферальная система</h3>
+    <p>Приглашайте друзей и получайте бонусы!</p>
+    
+    <input type="text" id="referralLink" readonly>
+    <button class="copy-btn" onclick="copyReferralLink()">Копировать ссылку</button>
+    
+    <div class="referral-stats">
+      <div class="stat-item">
+        <div>Приглашено</div>
+        <div class="stat-value" id="referralCount">0</div>
+      </div>
+      <div class="stat-item">
+        <div>Заработано</div>
+        <div class="stat-value" id="referralEarnings">0</div>
+      </div>
+    </div>
+  </div>
+
   <script>
     const tg = window.Telegram.WebApp;
     const userId = tg.initDataUnsafe?.user?.id;
-    const baseUrl = "https://raw.githubusercontent.com/koganvladislav/tokit/main/";
+    const baseUrl = "https://feldlerche.fvds.ru/videos/";
 
     const videoPaths = {
-      education: [...Array(10).keys()].map(i => `${baseUrl}videos/education/video${i + 1}.mp4`),
-      entertainment: [...Array(10).keys()].map(i => `${baseUrl}videos/entertainment/video${i + 1}.mp4`),
-      food: [...Array(10).keys()].map(i => `${baseUrl}videos/food/video${i + 1}.mp4`),
-      games: [...Array(19).keys()].map(i => `${baseUrl}videos/games/video${i + 1}.mp4`),
-      health: [...Array(12).keys()].map(i => `${baseUrl}videos/health/video${i + 1}.mp4`),
-      music: [...Array(20).keys()].map(i => `${baseUrl}videos/music/video${i + 1}.mp4`),
-      sport: [...Array(17).keys()].map(i => `${baseUrl}videos/sport/video${i + 1}.mp4`),
-      tech: [...Array(17).keys()].map(i => `${baseUrl}videos/tech/video${i + 1}.mp4`),
-      trip: [...Array(13).keys()].map(i => `${baseUrl}videos/trip/video${i + 1}.mp4`),
-      vehicles: [...Array(20).keys()].map(i => `${baseUrl}videos/vehicles/video${i + 1}.mp4`)
+      education: [...Array(57).keys()].map(i => `${baseUrl}education/video${i + 1}.mp4`),
+      entertainment: [...Array(44).keys()].map(i => `${baseUrl}entertainment/video${i + 1}.mp4`),
+      food: [...Array(42).keys()].map(i => `${baseUrl}food/video${i + 1}.mp4`),
+      games: [...Array(58).keys()].map(i => `${baseUrl}games/video${i + 1}.mp4`),
+      health: [...Array(54).keys()].map(i => `${baseUrl}health/video${i + 1}.mp4`),
+      music: [...Array(70).keys()].map(i => `${baseUrl}music/video${i + 1}.mp4`),
+      sport: [...Array(66).keys()].map(i => `${baseUrl}sport/video${i + 1}.mp4`),
+      tech: [...Array(67).keys()].map(i => `${baseUrl}tech/video${i + 1}.mp4`),
+      trip: [...Array(61).keys()].map(i => `${baseUrl}trip/video${i + 1}.mp4`),
+      vehicles: [...Array(73).keys()].map(i => `${baseUrl}vehicles/video${i + 1}.mp4`)
     };
 
     let selectedTopics = [];
@@ -226,6 +303,11 @@
     let isHalfWatched = false;
     let watchInterval;
     let animationFrameId;
+    
+    // Реферальные переменные
+    let referralCount = 0;
+    let referralEarnings = 0;
+    let referralCode = '';
 
     function loadCoins() {
       fetch(`/api/coins?user_id=${userId}`)
@@ -239,6 +321,25 @@
     function addCoin() {
       coins++;
       updateCoinDisplay();
+      
+      // Проверяем, нужно ли начислить бонус пригласившему
+      if (coins === 5) {
+        const refCode = localStorage.getItem('referralCode');
+        if (refCode) {
+          fetch('/api/addReferralBonus', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              referrer_code: refCode,
+              bonus_amount: 50
+            })
+          }).then(() => {
+            // После начисления бонуса удаляем код, чтобы не начислять повторно
+            localStorage.removeItem('referralCode');
+          }).catch(e => console.error('Ошибка начисления бонуса:', e));
+        }
+      }
+      
       fetch('/api/addCoin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -303,105 +404,9 @@
     }
 
     function playVideo(videoUrl) {
-      // Отменяем предыдущую анимацию
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
       }
 
       const player = document.getElementById('player');
-      const progressBar = document.getElementById('progressBar');
-      const container = document.querySelector('.video-container');
-      
-      // Сбрасываем прогресс-бар без анимации
-      progressBar.style.transition = 'none';
-      progressBar.style.width = '0';
-      progressBar.classList.remove('half-watched');
-      // Принудительный рефлоу для применения стилей
-      void progressBar.offsetWidth;
-      // Включаем анимацию обратно
-      progressBar.style.transition = 'width 0.2s linear';
-      
-      container.classList.remove('show-controls');
-      isHalfWatched = false;
-      
-      player.src = videoUrl;
-      player.load();
-
-      // Функция плавного обновления прогресса
-      const updateProgress = () => {
-        if (player.readyState > 0) {
-          const percent = (player.currentTime / player.duration) * 100;
-          progressBar.style.width = percent + '%';
-          
-          if (percent >= 50 && !progressBar.classList.contains('half-watched')) {
-            progressBar.classList.add('half-watched');
-          }
-        }
-        
-        if (!player.ended && !player.paused) {
-          animationFrameId = requestAnimationFrame(updateProgress);
-        }
-      };
-
-      player.onloadedmetadata = () => {
-        videoDuration = player.duration;
-        startTracking(player);
-        animationFrameId = requestAnimationFrame(updateProgress);
-      };
-
-      player.onclick = function() {
-        container.classList.toggle('show-controls');
-        if (player.paused) {
-          player.play().catch(e => console.log("Не удалось запустить видео:", e));
-          animationFrameId = requestAnimationFrame(updateProgress);
-        } else {
-          player.pause();
-        }
-      };
-
-      player.play().catch(e => console.log("Автовоспроизведение не разрешено:", e));
-
-      player.onended = function() {
-        stopTracking();
-      };
-    }
-
-    function startTracking(player) {
-      stopTracking();
-      watchInterval = setInterval(() => {
-        if (!isHalfWatched && player.currentTime >= player.duration / 2) {
-          isHalfWatched = true;
-          addCoin();
-        }
-      }, 1000);
-    }
-
-    function stopTracking() {
-      clearInterval(watchInterval);
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    }
-
-    function toggleTopic(button) {
-      const topic = button.value;
-      if (selectedTopics.includes(topic)) {
-        selectedTopics = selectedTopics.filter(t => t !== topic);
-        button.classList.remove("selected");
-      } else {
-        selectedTopics.push(topic);
-        button.classList.add("selected");
-      }
-    }
-
-    function shuffleArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-
-    tg.ready();
-  </script>
-</body>
-</html>
+      const progress
